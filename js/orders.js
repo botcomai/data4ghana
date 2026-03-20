@@ -123,54 +123,7 @@ function resetFilters() {
 }
 
 
-// ==========================================
-// CHECK ORDER STATUS VIA DATA4GHANA API
-// ==========================================
-async function checkStatus(phone, reference, btnElement) {
-  if (!reference) {
-    alert("Order reference is required for status check.");
-    return;
-  }
 
-  // Show loading state
-  const originalText = btnElement.innerText;
-  btnElement.innerText = "Checking...";
-  btnElement.disabled = true;
-
-  try {
-    if (window.checkOrderStatus) {
-      const result = await checkOrderStatus(null, reference);
-      
-      if (result.success) {
-        const statusData = result.data;
-        let statusMsg = "Status: " + JSON.stringify(statusData, null, 2);
-        
-        // Try to extract meaningful status info
-        if (statusData.status) {
-          statusMsg = `Status: ${statusData.status}`;
-          if (statusData.reference) statusMsg += `\nRef: ${statusData.reference}`;
-          if (statusData.message) statusMsg += `\n${statusData.message}`;
-        }
-
-        alert(statusMsg);
-        
-        // If we got a status update, refresh the orders
-        fetchOrders();
-      } else {
-        alert("Status check failed: " + (result.error || "Unknown error"));
-      }
-    } else {
-      alert("API service not available. Please reload the page.");
-    }
-  } catch(err) {
-    console.error("Status check error:", err);
-    alert("Failed to check order status.");
-  }
-
-  // Restore button
-  btnElement.innerText = originalText;
-  btnElement.disabled = false;
-}
 
 
 function applyFilters() {
@@ -184,7 +137,7 @@ function applyFilters() {
     
     // Search by ID or Product (Network/Bundle logic fallback)
       const friendlyRef = getFriendlyRef(order).toLowerCase();
-      const searchTarget = `${friendlyRef} ${order.id} ${order.network} ${order.bundle} ${order.api_reference || ''}`.toLowerCase();
+      const searchTarget = `${friendlyRef} ${order.id} ${order.network} ${order.bundle || order.plan || ''}`.toLowerCase();
       match = match && searchTarget.includes(searchVal);
     
     // Filter by Exact Status

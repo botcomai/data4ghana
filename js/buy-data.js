@@ -587,57 +587,16 @@ async function makePayment() {
   let successCount   = 0;
   let currentBalance = walletData.wallet_balance;
 
-  // --- Fetch API settings for auto-fulfillment ---
-  let apiSettings = {};
-  if (window.placeDataOrder) {
-    try {
-      const { data: settingsData } = await supabase.from('app_settings').select('key, value');
-      if (settingsData) {
-        settingsData.forEach(s => apiSettings[s.key] = s.value === 'true');
-      }
-    } catch(e) {}
-  }
-  const apiKeyMap = {
-    'MTN Data': 'api_auto_mtn', 'MTN': 'api_auto_mtn',
-    'Telecel': 'api_auto_telecel',
-    'AirtelTigo / Ishare': 'api_auto_tigo', 'AirtelTigo': 'api_auto_tigo', 'Ishare': 'api_auto_tigo',
-    'Bigtime': 'api_auto_bigtime',
-  };
-
   // --- Process NORMAL orders ---
   for (const item of normalItems) {
     const newBalance = parseFloat((currentBalance - item.amount).toFixed(2));
 
     await supabase.from('users').update({ wallet_balance: newBalance }).eq('id', user.id);
 
-    // API Fulfillment Check
-    const settingKey = apiKeyMap[item.network] || 'api_auto_mtn';
-    const apiEnabled = apiSettings[settingKey] || false;
-
-    let orderStatus = 'pending';
-    let apiReference = null;
-    let apiResponseData = null;
-
-    if (apiEnabled && window.placeDataOrder) {
-      const apiNetwork = getApiNetworkName(item.network);
-      const dataSize = item.gb + "GB";
-      const apiResult = await window.placeDataOrder(apiNetwork, item.phone, dataSize);
-
-      if (apiResult.success) {
-        orderStatus = 'received';
-        apiReference = apiResult.data?.reference || apiResult.data?.orderId || null;
-        apiResponseData = apiResult.data;
-      } else {
-        apiResponseData = { error: apiResult.error, details: apiResult.api_response };
-      }
-    }
-
     await supabase.from('orders').insert({
       user_id: user.id, network: item.network,
       phone: item.phone, plan: `${item.gb}GB`,
-      amount: item.amount, status: orderStatus,
-      api_reference: apiReference,
-      api_response: apiResponseData ? JSON.stringify(apiResponseData) : null
+      amount: item.amount, status: 'pending'
     });
 
     await supabase.from('transactions').insert({
@@ -771,82 +730,6 @@ await supabase
 .eq("id",user.id)
 
 
-// ==========================================
-// CHECK IF API AUTO-ORDER IS ENABLED
-// ==========================================
-let apiEnabled = false;
-try {
-  const apiKeyMap = {
-    'MTN Data': 'api_auto_mtn', 'MTN': 'api_auto_mtn',
-    'Telecel': 'api_auto_telecel',
-    'AirtelTigo / Ishare': 'api_auto_tigo', 'AirtelTigo': 'api_auto_tigo', 'Ishare': 'api_auto_tigo',
-    'Bigtime': 'api_auto_bigtime',
-  };
-  const settingKey = apiKeyMap[selectedNetwork] || 'api_auto_mtn';
-
-  const { data: settingsData } = await supabase
-    .from("app_settings")
-    .select("value")
-    .eq("key", settingKey)
-    .single();
-  apiEnabled = settingsData && settingsData.value === "true";
-} catch(e) {
-  // If settings table doesn't exist, default to disabled
-  apiEnabled = false;
-}
-
-
-let orderStatus = "pending";
-let apiReference = null;
-let apiResponseData = null;
-
-if (apiEnabled && window.placeDataOrder) {
-  // ==========================================
-  // AUTOMATIC API ORDER
-  // ==========================================
-  const apiNetwork = getApiNetworkName(selectedNetwork);
-  const dataSize = bundle + "GB";
-
-  const apiResult = await placeDataOrder(apiNetwork, phone, dataSize);
-
-  if (apiResult.success) {
-    orderStatus = "received";
-    apiReference = apiResult.data?.reference || apiResult.data?.order_id || null;
-    apiResponseData = apiResult.data;
-  } else {
-    // API FAILED — Refund the wallet
-    orderStatus = "failed";
-    await supabase
-      .from("users")
-      .update({ wallet_balance: data.wallet_balance }) // restore original balance
-      .eq("id", user.id);
-
-    // Record the failed transaction
-    await supabase
-      .from("transactions")
-      .insert({
-        user_id: user.id,
-        type: "Purchase (Failed)",
-        amount: price,
-        balance_before: data.wallet_balance,
-        balance_after: data.wallet_balance,
-        status: "Failed",
-        reference: "API_FAIL"
-      });
-
-    if (window.showSuccessPopup) {
-      window.showSuccessPopup("Order Failed!", `The data order could not be processed. Your ₵${price} has been refunded. Error: ${apiResult.error}`, () => {
-        window.location.reload();
-      });
-    } else {
-      alert(`Order failed! Your ₵${price} has been refunded. Error: ${apiResult.error}`);
-      window.location.reload();
-    }
-    return;
-  }
-}
-
-
 // Record the transaction (debit)
 await supabase
 .from("transactions")
@@ -856,46 +739,33 @@ await supabase
   amount: price,
   balance_before: data.wallet_balance,
   balance_after: newBalance,
-  status: orderStatus === "completed" ? "Completed" : "Pending",
-  reference: apiReference || null
+  status: "Pending"
 });
-
 
 // Insert order record
 await supabase
 .from("orders")
 .insert({
-
-user_id:user.id,
-network:selectedNetwork,
-phone:phone,
-bundle:bundle,
-price:price,
-status: orderStatus,
-api_reference: apiReference,
-api_response: apiResponseData ? JSON.stringify(apiResponseData) : null
-
+  user_id:user.id,
+  network:selectedNetwork,
+  phone:phone,
+  bundle:bundle,
+  price:price,
+  status: "pending"
 })
 
 // Dispatch SMS Confirmation
 if (window.sendSmsNotification) {
-  const statusMsg = orderStatus === "completed"
-    ? `completed successfully. Ref: ${apiReference || 'N/A'}`
-    : `received and is processing`;
-  window.sendSmsNotification(phone, `Dear Customer, your order for ${bundle}GB ${selectedNetwork} data has been ${statusMsg}. Thank you for using Data4Ghana!`);
+  window.sendSmsNotification(phone, `Dear Customer, your order for ${bundle}GB ${selectedNetwork} data has been received and is processing. Thank you for using Data4Ghana!`);
 }
 
 // Show Premium Animated Success Modal
 if (window.showSuccessPopup) {
-  const title = orderStatus === "completed" ? "Order Completed!" : "Order Placed!";
-  const msg = orderStatus === "completed"
-    ? `Your ${bundle}GB ${selectedNetwork} data has been delivered. Ref: ${apiReference || 'N/A'}`
-    : `Your order for ${bundle}GB ${selectedNetwork} data has been placed and is being processed.`;
-  window.showSuccessPopup(title, msg, () => {
+  window.showSuccessPopup("Order Placed!", `Your order for ${bundle}GB ${selectedNetwork} data has been placed and is being processed.`, () => {
     window.location.reload();
   });
 } else {
-  alert(orderStatus === "completed" ? "Order completed successfully!" : "Order placed successfully");
+  alert("Order placed successfully");
   window.location.reload();
 }
 

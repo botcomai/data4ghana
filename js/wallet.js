@@ -171,21 +171,79 @@ async function startPaystackPayment() {
       source: 'wallet_topup',
     },
     callback: function(response) {
-      if (pendingNote) {
-        pendingNote.style.display = 'block';
-        pendingNote.innerText = `Payment pending confirmation. Ref: ${response.reference}. Wallet balance updates after webhook verification.`;
-      }
-      alert(`Payment successful. Reference: ${response.reference}. Wallet will update after webhook confirmation.`);
-      setTimeout(() => {
-        if (typeof loadWallet === 'function') loadWallet();
-      }, 2000);
+      // Show a non-blocking banner and start polling for the balance update
+      showPaymentPendingBanner(response.reference, amount);
+      watchForBalanceUpdate(user.id, amount);
     },
     onClose: function() {
-      // Keep simple for beginner-friendly UX.
+      // user closed the popup without paying — nothing to do
     },
   });
 
   handler.openIframe();
+}
+
+function showPaymentPendingBanner(reference, amount) {
+  let banner = document.getElementById('_paymentStatusBanner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = '_paymentStatusBanner';
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;padding:14px 20px;text-align:center;font-weight:600;font-size:15px;transition:background 0.4s';
+    document.body.prepend(banner);
+  }
+  banner.style.background = '#f59e0b';
+  banner.style.color = '#fff';
+  banner.innerText = `⏳ Payment of ₵${Number(amount).toFixed(2)} received. Confirming… your wallet will update automatically.`;
+}
+
+function showPaymentConfirmedBanner(newBalance) {
+  const banner = document.getElementById('_paymentStatusBanner');
+  if (banner) {
+    banner.style.background = '#22c55e';
+    banner.innerText = `✅ Wallet funded! New balance: ₵${Number(newBalance).toFixed(2)}`;
+    setTimeout(() => { banner.remove(); }, 6000);
+  }
+}
+
+async function watchForBalanceUpdate(userId, paidAmount) {
+  // Get the balance right now before the webhook hits
+  const { data: before } = await supabase
+    .from('users')
+    .select('wallet_balance')
+    .eq('id', userId)
+    .single();
+
+  const balanceBefore = Number(before?.wallet_balance || 0);
+  let attempts = 0;
+  const maxAttempts = 20; // poll for up to ~60 seconds
+
+  const poll = setInterval(async () => {
+    attempts++;
+    try {
+      const { data: current } = await supabase
+        .from('users')
+        .select('wallet_balance')
+        .eq('id', userId)
+        .single();
+
+      const currentBalance = Number(current?.wallet_balance || 0);
+
+      if (currentBalance > balanceBefore) {
+        clearInterval(poll);
+        showPaymentConfirmedBanner(currentBalance);
+        // Refresh wallet display
+        if (typeof loadWallet === 'function') loadWallet();
+      } else if (attempts >= maxAttempts) {
+        clearInterval(poll);
+        const banner = document.getElementById('_paymentStatusBanner');
+        if (banner) {
+          banner.style.background = '#64748b';
+          banner.innerText = '⚠️ Payment sent but not confirmed yet. Refresh in a moment.';
+          setTimeout(() => { banner.remove(); }, 8000);
+        }
+      }
+    } catch (_) {}
+  }, 3000);
 }
 
 function prepareManualTransfer() {
