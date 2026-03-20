@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal | Data4Ghana</title>
+
+  <link rel="stylesheet" href="css/admin-portal.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="js/security.js"></script>
+  <script src="js/supabase.js"></script>
+
+  <meta name="theme-color" content="#0b1220">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Data4Ghana Admin">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+<body>
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">D4G</div>
+      <div>
+        <h2>Data4Ghana</h2>
+        <p>Admin Portal</p>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" data-section="dashboard" onclick="switchSection('dashboard',this)">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a class="nav-item" data-section="users" onclick="switchSection('users',this)">
+        <span class="nav-icon">👥</span> Users
+      </a>
+      <a class="nav-item" data-section="orders" onclick="switchSection('orders',this)">
+        <span class="nav-icon">📦</span> Orders
+      </a>
+      <a class="nav-item" data-section="finance" onclick="switchSection('finance',this)">
+        <span class="nav-icon">💰</span> Finance
+      </a>
+      <a class="nav-item" data-section="notifications" onclick="switchSection('notifications',this)">
+        <span class="nav-icon">🔔</span> Notifications
+      </a>
+      <a class="nav-item" data-section="afa" onclick="switchSection('afa',this)">
+        <span class="nav-icon">📋</span> AFA Manager
+      </a>
+      <a class="nav-item" data-section="support" onclick="switchSection('support',this)">
+        <span class="nav-icon">🎫</span> Support
+      </a>
+      <a class="nav-item" data-section="matrix" onclick="switchSection('matrix',this)">
+        <span class="nav-icon">🧩</span> Delivery Matrix
+      </a>
+      <a class="nav-item" data-section="gateway" onclick="switchSection('gateway',this)">
+        <span class="nav-icon">💳</span> Payment Gateway
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="theme-toggle">
+        <label class="toggle-label">
+          <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span>Dark Mode</span>
+        </label>
+      </div>
+      <button class="btn danger full-w" onclick="adminLogout()">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+        <div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <small id="lastSync" class="sync-text">Last sync: --</small>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <label class="auto-refresh-wrap">
+          <input type="checkbox" id="autoRefreshToggle" onchange="toggleAutoRefresh()">
+          <span class="toggle-track small"><span class="toggle-thumb"></span></span>
+          <span>Auto</span>
+        </label>
+        <select id="refreshIntervalSelect" class="interval-select" onchange="applyAutoRefreshInterval()">
+          <option value="10">10s</option>
+          <option value="20" selected>20s</option>
+          <option value="30">30s</option>
+          <option value="60">60s</option>
+        </select>
+        <button class="btn sm" onclick="refreshPortal()">↻ Refresh</button>
+        <button class="btn outline sm" id="installAppBtn" style="display:none;">Install</button>
+      </div>
+    </header>
+
+    <!-- ========== DASHBOARD ========== -->
+    <section id="section-dashboard" class="page-section active">
+      <div class="section-hero section-hero--blue">
+        <div class="section-hero-icon">📊</div>
+        <div>
+          <div class="section-hero-title">Dashboard Overview</div>
+          <div class="section-hero-sub">Real-time platform metrics and activity summary</div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <article class="stat-card accent-blue">
+          <div class="stat-icon">👥</div>
+          <div><p>Total Users</p><h3 id="metricUsers">--</h3></div>
+        </article>
+        <article class="stat-card accent-green">
+          <div class="stat-icon">📦</div>
+          <div><p>Orders Today</p><h3 id="metricOrdersToday">--</h3></div>
+        </article>
+        <article class="stat-card accent-emerald">
+          <div class="stat-icon">💵</div>
+          <div><p>Revenue Today</p><h3 id="metricRevenueToday">--</h3></div>
+        </article>
+        <article class="stat-card accent-amber">
+          <div class="stat-icon">⏳</div>
+          <div><p>Pending Funding</p><h3 id="metricPendingFunding">--</h3></div>
+        </article>
+        <article class="stat-card accent-rose">
+          <div class="stat-icon">📝</div>
+          <div><p>Pending Settlements</p><h3 id="metricPendingSettlements">--</h3></div>
+        </article>
+        <article class="stat-card accent-purple">
+          <div class="stat-icon">💳</div>
+          <div><p>Total Wallets</p><h3 id="metricWallets">--</h3></div>
+        </article>
+        <article class="stat-card accent-teal">
+          <div class="stat-icon">🎫</div>
+          <div><p>Open Tickets</p><h3 id="metricOpenTickets">--</h3></div>
+        </article>
+        <article class="stat-card accent-status">
+          <div class="stat-icon">🟢</div>
+          <div>
+            <p>Portal Status</p>
+            <h3 id="metricStatus">Online</h3>
+            <small id="statusSyncTime" class="sync-sub">--</small>
+          </div>
+        </article>
+      </div>
+
+      <div class="quick-links">
+        <a href="free-mode.html" class="quick-link">🆓 Free Mode</a>
+        <a href="free-mode-records.html" class="quick-link">📒 Free Mode Records</a>
+        <a href="orders.html" class="quick-link">📦 Order History</a>
+        <a href="support.html" class="quick-link">🎫 Support Center</a>
+        <a href="wallet.html" class="quick-link">💳 Wallet Funding</a>
+        <a href="afa.html" class="quick-link">📋 AFA Portal</a>
+        <a href="transactions.html" class="quick-link">🧾 Transactions</a>
+        <a href="schedule.html" class="quick-link">📅 Scheduled Orders</a>
+        <a href="scheduled-deliveries-matrix.html" class="quick-link">🧩 Delivery Matrix</a>
+      </div>
+
+      <div class="panel-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Recent Users</h2>
+            <span>Latest signups</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th></tr></thead>
+              <tbody id="dashUsersBody">
+                <tr><td colspan="4" class="state-msg">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Recent Orders</h2>
+            <span>Latest purchases</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Phone</th><th>Network</th><th>Plan</th><th>Amount</th><th>Status</th></tr></thead>
+              <tbody id="dashOrdersBody">
+                <tr><td colspan="5" class="state-msg">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========== USERS ========== -->
+    <section id="section-users" class="page-section">
+      <div class="section-hero section-hero--purple">
+        <div class="section-hero-icon">👥</div>
+        <div>
+          <div class="section-hero-title">User Management</div>
+          <div class="section-hero-sub">View, search, and manage all registered users and roles</div>
+        </div>
+      </div>
+      <div class="section-toolbar">
+        <input type="text" id="usersSearch" placeholder="Search user by name or email..." oninput="filterUsersTable()">
+        <button class="btn outline sm" onclick="exportUsersCSV()">⬇ Export CSV</button>
+      </div>
+      <article class="panel">
+        <div class="panel-head">
+          <h2>All Users</h2>
+          <span id="usersCount">--</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>User ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Wallet</th><th>Joined</th><th>Action</th></tr>
+            </thead>
+            <tbody id="recentUsersBody">
+              <tr><td colspan="8" class="state-msg">Loading users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="usersPagination"></div>
+      </article>
+
+      <article class="panel" style="margin-top:14px;">
+        <div class="panel-head">
+          <h2>Quick Role Manager</h2>
+          <span>Change user roles</span>
+        </div>
+        <div class="section-toolbar" style="padding:0;margin-bottom:8px;">
+          <input type="text" id="rolesSearch" placeholder="Search user..." oninput="filterRolesTable()">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Email</th><th>Current Role</th><th>New Role</th><th>Action</th></tr></thead>
+            <tbody id="rolesBody">
+              <tr><td colspan="5" class="state-msg">Loading roles...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <!-- ========== ORDERS ========== -->
+    <section id="section-orders" class="page-section">
+      <div class="section-hero section-hero--teal">
+        <div class="section-hero-icon">📦</div>
+        <div>
+          <div class="section-hero-title">Orders Management</div>
+          <div class="section-hero-sub">Filter, update, refund and export customer orders</div>
+        </div>
+      </div>
+      <div class="section-toolbar">
+        <input type="text" id="ordersCustomerFilter" placeholder="Customer (name/email/phone)" oninput="filterOrdersTable()">
+        <select id="ordersStatusFilter" onchange="filterOrdersTable()">
+          <option value="">All Statuses</option>
+          <option value="completed">Completed</option>
+          <option value="pending">Pending</option>
+          <option value="failed">Failed</option>
+          <option value="processing">Processing</option>
+          <option value="refunded">Refunded</option>
+        </select>
+        <select id="ordersNetworkFilter" onchange="filterOrdersTable()">
+          <option value="">All Networks</option>
+        </select>
+        <select id="ordersProductFilter" onchange="filterOrdersTable()">
+          <option value="">All Products</option>
+        </select>
+        <select id="ordersTargetStatus" onchange="filterOrdersTable()">
+          <option value="">All Target Statuses</option>
+          <option value="completed">Completed</option>
+          <option value="pending">Pending</option>
+          <option value="failed">Failed</option>
+          <option value="processing">Processing</option>
+          <option value="refunded">Refunded</option>
+        </select>
+        <label class="toolbar-date-field">
+          <span>Date</span>
+          <input type="date" id="ordersDateFilter" onchange="filterOrdersTable()" aria-label="Orders date filter">
+        </label>
+        <button class="btn outline sm" id="ordersCopyExcelBtn" onclick="copyOrdersForExcel()">⧉ Copy Excel</button>
+        <button class="btn outline sm" id="ordersExportCsvBtn" onclick="exportOrdersCSV()">⬇ Export CSV</button>
+      </div>
+      <article class="panel">
+        <div class="panel-head">
+          <h2>All Orders</h2>
+          <div class="panel-head-actions">
+            <select id="ordersBulkStatus" class="role-select" style="display:none">
+              <option value="pending">Set Pending</option>
+              <option value="processing">Set Processing</option>
+              <option value="completed">Set Completed</option>
+              <option value="failed">Set Failed</option>
+              <option value="refunded">Set Refunded</option>
+            </select>
+            <button id="ordersMassUpdateBtn" class="tiny-btn role-save" style="display:none" onclick="bulkUpdateSelectedOrders()">Mass Update</button>
+            <button id="ordersMassDeleteBtn" class="tiny-btn reject" style="display:none" onclick="bulkDeleteSelectedOrders()">Mass Delete</button>
+            <button id="ordersRefundLegacyBtn" class="tiny-btn approve" style="display:none" onclick="bulkRefundLegacyOrders()">Refund (Legacy)</button>
+            <span id="ordersCount">--</span>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="ordersSelectAll" onchange="toggleOrdersSelectAll()"></th>
+                <th>Order ID</th>
+                <th class="sortable" onclick="sortOrders('phone')">Customer ⇅</th>
+                <th>Network / Plan</th>
+                <th class="sortable" onclick="sortOrders('amount')">Amount ⇅</th>
+                <th>Status</th>
+                <th class="sortable" onclick="sortOrders('created_at')">Date ⇅</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="recentOrdersBody">
+              <tr><td colspan="8" class="state-msg">Loading orders...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="ordersPagination"></div>
+      </article>
+
+      <article class="panel" style="margin-top:14px;">
+        <div class="panel-head">
+          <h2>Targeted Customer Update</h2>
+          <span>Update a specific customer's orders by current status</span>
+        </div>
+        <div class="targeted-update-form">
+          <input type="text" id="targetedCustomerPhone" placeholder="Customer phone number">
+          <select id="targetedCurrentStatus">
+            <option value="Pending">Pending</option>
+            <option value="Failed">Failed</option>
+            <option value="Processing">Processing</option>
+          </select>
+          <select id="targetedNewStatus">
+            <option value="Completed">Completed</option>
+            <option value="Refunded">Refunded</option>
+          </select>
+          <button class="btn" onclick="updateTargetedCustomerOrders()">Update Customer Orders</button>
+        </div>
+        <div class="targeted-selection-tools">
+          <button class="tiny-btn role-save" onclick="detectTargetStatusFromPhone()">Find Same Status</button>
+          <button class="tiny-btn approve" onclick="selectOrdersRelativeToTarget('up')">↑ Select Above</button>
+          <button class="tiny-btn approve" onclick="selectOrdersRelativeToTarget('down')">↓ Select Below</button>
+          <span id="targetStatusPreview" class="target-status-preview">Enter a phone number to detect its latest status and show matching rows.</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- ========== FINANCE ========== -->
+    <section id="section-finance" class="page-section">
+      <div class="section-hero section-hero--green">
+        <div class="section-hero-icon">💰</div>
+        <div>
+          <div class="section-hero-title">Finance &amp; Payments</div>
+          <div class="section-hero-sub">Approve manual funding requests and settlements</div>
+        </div>
+      </div>
+      <div class="panel-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Pending Manual Funding</h2>
+            <div class="panel-head-actions">
+              <button class="tiny-btn approve" onclick="bulkApproveFunding()">✓ Approve All</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><input type="checkbox" id="fundingSelectAll" onchange="toggleFundingSelectAll()"></th>
+                  <th>User</th><th>Amount</th><th>Reference</th><th>Date &amp; Time</th><th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="manualFundingBody">
+                <tr><td colspan="6" class="state-msg">Loading pending funding...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Pending Settlements</h2>
+            <div class="panel-head-actions">
+              <button class="tiny-btn approve" onclick="bulkApproveSettlements()">✓ Approve All</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><input type="checkbox" id="settlementSelectAll" onchange="toggleSettlementSelectAll()"></th>
+                  <th>User</th><th>Amount</th><th>Reference</th><th>Date &amp; Time</th><th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="settlementsBody">
+                <tr><td colspan="6" class="state-msg">Loading settlements...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========== NOTIFICATIONS ========== -->
+    <section id="section-notifications" class="page-section">
+      <div class="section-hero section-hero--amber">
+        <div class="section-hero-icon">🔔</div>
+        <div>
+          <div class="section-hero-title">Notification Management</div>
+          <div class="section-hero-sub">Broadcast messages and manage app-wide notices</div>
+        </div>
+      </div>
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Notification Management</h2>
+          <span>Create and control app-wide notices</span>
+        </div>
+        <form class="notify-form" onsubmit="createNotification(event)">
+          <input type="text" id="notifContent" maxlength="300" placeholder="Notification content..." required>
+          <select id="notifType">
+            <option value="info">Info</option>
+            <option value="success">Success</option>
+            <option value="warning">Warning</option>
+            <option value="danger">Danger</option>
+          </select>
+          <button type="submit" class="btn">Publish</button>
+        </form>
+        <div class="table-wrap" style="margin-top:12px;">
+          <table>
+            <thead><tr><th>Message</th><th>Type</th><th>Status</th><th>Created</th><th>Action</th></tr></thead>
+            <tbody id="notificationsBody">
+              <tr><td colspan="5" class="state-msg">Loading notifications...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <!-- ========== AFA ========== -->
+    <section id="section-afa" class="page-section">
+      <div class="section-hero section-hero--rose">
+        <div class="section-hero-icon">📋</div>
+        <div>
+          <div class="section-hero-title">AFA Manager</div>
+          <div class="section-hero-sub">Manage AFA registrations, normal and premium returns</div>
+        </div>
+      </div>
+      <article class="panel">
+        <div class="panel-head">
+          <h2>AFA Registrations</h2>
+          <span id="afaCount">--</span>
+        </div>
+        <div class="section-toolbar" style="padding:0;margin-bottom:8px;">
+          <input type="text" id="afaSearch" placeholder="Search AFA registrations..." oninput="filterAFATable()">
+          <button class="btn outline sm" onclick="exportAFACSV()">⬇ Export CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Phone</th><th>Type</th><th>Status</th><th>Registered</th></tr></thead>
+            <tbody id="afaBody">
+              <tr><td colspan="5" class="state-msg">Loading AFA registrations...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="afaPagination"></div>
+      </article>
+
+      <div class="panel-grid" style="margin-top:14px;">
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Normal AFA Returns</h2>
+            <span id="afaNormalCount">--</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Phone</th><th>ID Number</th><th>Status</th><th>Submitted</th><th>Documents</th><th>Action</th></tr></thead>
+              <tbody id="afaNormalBody">
+                <tr><td colspan="7" class="state-msg">Loading normal returns...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Premium AFA Returns</h2>
+            <span id="afaPremiumCount">--</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Phone</th><th>ID Number</th><th>Status</th><th>Submitted</th><th>Action</th></tr></thead>
+              <tbody id="afaPremiumBody">
+                <tr><td colspan="6" class="state-msg">Loading premium returns...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========== SUPPORT ========== -->
+    <section id="section-support" class="page-section">
+      <div class="section-hero section-hero--indigo">
+        <div class="section-hero-icon">🎫</div>
+        <div>
+          <div class="section-hero-title">Support Tickets</div>
+          <div class="section-hero-sub">Review, resolve and close customer support tickets</div>
+        </div>
+      </div>
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Support Tickets</h2>
+          <div class="panel-head-actions">
+            <button class="tiny-btn approve" onclick="bulkResolveSupportTickets()">Resolve Selected</button>
+            <button class="tiny-btn reject" onclick="bulkCloseSupportTickets()">Close Selected</button>
+            <span id="ticketsCount">--</span>
+          </div>
+        </div>
+        <div class="section-toolbar" style="padding:0;margin-bottom:8px;">
+          <input type="text" id="ticketsSearch" placeholder="Search tickets..." oninput="filterTicketsTable()">
+          <select id="ticketsStatusFilter" onchange="filterTicketsTable()">
+            <option value="">All</option>
+            <option value="open">Open</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th><input type="checkbox" id="ticketsSelectAll" onchange="toggleTicketsSelectAll()"></th><th>User</th><th>Subject</th><th>Category</th><th>Priority</th><th>Status</th><th>Created</th><th>Action</th></tr></thead>
+            <tbody id="ticketsBody">
+              <tr><td colspan="8" class="state-msg">Loading tickets...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="ticketsPagination"></div>
+      </article>
+    </section>
+
+    <!-- ========== SCHEDULED DELIVERIES MATRIX ========== -->
+    <section id="section-matrix" class="page-section">
+      <div class="section-hero section-hero--teal">
+        <div class="section-hero-icon">🧩</div>
+        <div>
+          <div class="section-hero-title">Scheduled Deliveries Matrix</div>
+          <div class="section-hero-sub">Inspect delivery volumes by date &amp; network, then drill down to records</div>
+        </div>
+        <button class="btn sm" style="margin-left:auto;flex-shrink:0" onclick="loadScheduledMatrix()">&#8635; Refresh</button>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="stats-grid" style="margin-bottom:16px">
+        <article class="stat-card accent-blue">
+          <div class="stat-icon">📅</div>
+          <div><p>Total Scheduled</p><h3 id="mxSumTotal">--</h3></div>
+        </article>
+        <article class="stat-card accent-green">
+          <div class="stat-icon">💵</div>
+          <div><p>Total Amount</p><h3 id="mxSumAmount">--</h3></div>
+        </article>
+        <article class="stat-card accent-purple">
+          <div class="stat-icon">📱</div>
+          <div><p>Unique Phones</p><h3 id="mxSumPhones">--</h3></div>
+        </article>
+        <article class="stat-card accent-teal">
+          <div class="stat-icon">🌐</div>
+          <div><p>Networks</p><h3 id="mxSumNetworks">--</h3></div>
+        </article>
+      </div>
+
+      <!-- Filters -->
+      <div class="section-toolbar" style="margin-bottom:16px">
+        <select id="mxNetwork" onchange="applyMatrixFilters()">
+          <option value="">All Networks</option>
+        </select>
+        <select id="mxStatus" onchange="applyMatrixFilters()">
+          <option value="">All Statuses</option>
+          <option value="scheduled">Scheduled</option>
+          <option value="processed">Processed</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="failed">Failed</option>
+        </select>
+        <label class="toolbar-date-field">
+          <span>Date</span>
+          <input type="date" id="mxDate" onchange="applyMatrixFilters()">
+        </label>
+        <button class="btn outline sm" onclick="resetMatrixFilters()">Reset</button>
+      </div>
+
+      <!-- Matrix Table -->
+      <article class="panel" style="margin-bottom:14px">
+        <div class="panel-head">
+          <h2>Date × Network Matrix</h2>
+          <span id="mxMatrixLabel">--</span>
+        </div>
+        <div class="table-wrap">
+          <table id="mxMatrixTable">
+            <thead id="mxMatrixHead"></thead>
+            <tbody id="mxMatrixBody">
+              <tr><td class="state-msg">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- Detail Records -->
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Scheduled Delivery Records</h2>
+          <span id="mxDetailCount">0 rows</span>
+        </div>
+        <!-- Bulk Action Bar -->
+        <div id="mxBulkBar" style="display:none;padding:10px 16px;background:var(--primary-light,#eff6ff);border-bottom:1px solid var(--border,#e2e8f0);gap:8px;align-items:center;flex-wrap:wrap">
+          <span id="mxSelectedCount" style="font-size:13px;font-weight:600">0 selected</span>
+          <button class="btn sm" onclick="mxProcessSelected()">&#10003; Process Selected</button>
+          <button class="btn sm danger" onclick="mxDeleteSelected()">&#128465; Delete Selected</button>
+          <button class="btn sm outline" onclick="mxRefundSelected()">&#8617; Refund Selected</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:36px"><input type="checkbox" id="mxSelectAll" onchange="mxToggleAllRows(this)"></th>
+                <th>Scheduled At</th><th>Phone</th><th>Network</th><th>Plan</th><th>Amount</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="mxDetailsBody">
+              <tr><td colspan="7" class="state-msg">Loading records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- History Table -->
+      <article class="panel" style="margin-top:14px">
+        <div class="panel-head">
+          <h2>&#128218; Delivery History</h2>
+          <span id="mxHistoryCount">0 rows</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Scheduled At</th><th>Phone</th><th>Network</th><th>Plan</th><th>Amount</th><th>Status</th></tr>
+            </thead>
+            <tbody id="mxHistoryBody">
+              <tr><td colspan="6" class="state-msg">No history found.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <!-- ========== PAYMENT GATEWAY CONTROLS ========== -->
+    <section id="section-gateway" class="page-section">
+      <div class="section-hero section-hero--teal">
+        <div class="section-hero-icon">💳</div>
+        <div>
+          <div class="section-hero-title">Payment Gateway Controls</div>
+          <div class="section-hero-sub">Configure manual MoMo payments, API integration, and monitor funding requests</div>
+        </div>
+        <button class="btn sm" style="margin-left:auto;flex-shrink:0" onclick="loadGatewaySettings()">↻ Refresh</button>
+      </div>
+
+      <!-- Status Overview -->
+      <div class="stats-grid" style="margin-bottom:18px">
+        <article class="stat-card accent-green">
+          <div class="stat-icon">📱</div>
+          <div><p>Manual MoMo</p><h3 id="gwStatusManual">--</h3></div>
+        </article>
+        <article class="stat-card accent-blue">
+          <div class="stat-icon">🔌</div>
+          <div><p>API Gateway</p><h3 id="gwStatusApi">--</h3></div>
+        </article>
+        <article class="stat-card accent-purple">
+          <div class="stat-icon">⚡</div>
+          <div><p>Auto-Order</p><h3 id="gwStatusAutoOrder">--</h3></div>
+        </article>
+        <article class="stat-card accent-teal">
+          <div class="stat-icon">📊</div>
+          <div><p>Total Funding Requests</p><h3 id="gwFundingCount">--</h3></div>
+        </article>
+      </div>
+
+      <div class="panel-grid">
+
+        <!-- Manual MoMo Payment Settings -->
+        <article class="panel">
+          <div class="panel-head">
+            <h2>📱 Manual MoMo Payment</h2>
+            <span>Mobile money collection settings</span>
+          </div>
+          <div class="gw-settings-form">
+            <div class="gw-toggle-row">
+              <div>
+                <div class="gw-label">Enable Manual MoMo</div>
+                <div class="gw-hint">Allow users to fund wallet via manual MoMo transfer</div>
+              </div>
+              <label class="toggle-label gw-toggle">
+                <input type="checkbox" id="gwManualEnabled" onchange="gwPreviewManualToggle()">
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="gw-field">
+              <label for="gwMomoNumber">MoMo Number</label>
+              <input type="tel" id="gwMomoNumber" placeholder="e.g. 0559623850" maxlength="15">
+            </div>
+            <div class="gw-field">
+              <label for="gwMomoName">Account Name</label>
+              <input type="text" id="gwMomoName" placeholder="e.g. Data4Ghana Enterprise" maxlength="80">
+            </div>
+            <div class="gw-actions">
+              <button class="btn full-w" onclick="saveManualSettings()">💾 Save Manual Settings</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- API Gateway Settings -->
+        <article class="panel">
+          <div class="panel-head">
+            <h2>🔌 DatarJust API Gateway</h2>
+            <span>VTU API integration (Cleanheart)</span>
+          </div>
+          <div class="gw-settings-form">
+            <div class="gw-network-notice">
+              <span class="gw-network-badge">📡 Network Keys</span>
+              Official purchase endpoint uses <strong>networkKey</strong>: <strong>YELLO</strong> (MTN), <strong>TELECEL</strong>, <strong>AT_PREMIUM</strong> (Ishare), and <strong>AT_BIGTIME</strong> (Bigtime).
+            </div>
+            <div class="gw-toggle-row">
+              <div>
+                <div class="gw-label">Enable API Gateway</div>
+                <div class="gw-hint">Master switch for external VTU API integration</div>
+              </div>
+              <label class="toggle-label gw-toggle">
+                <input type="checkbox" id="gwApiEnabled" onchange="gwPreviewApiToggle()">
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="gw-field">
+              <label for="gwApiKey">API Key</label>
+              <div class="gw-input-wrap">
+                <input type="password" id="gwApiKey" placeholder="Enter X-API-Key value..." maxlength="200" autocomplete="new-password">
+                <button type="button" class="gw-eye-btn" onclick="gwToggleApiKeyVisibility()" title="Show / Hide">👁</button>
+              </div>
+            </div>
+            <div class="gw-toggle-row" style="margin-top:10px">
+              <div>
+                <div class="gw-label">Auto-Order Fulfillment</div>
+                <div class="gw-hint">Automatically fulfil orders via API when placed</div>
+              </div>
+              <label class="toggle-label gw-toggle">
+                <input type="checkbox" id="gwAutoOrder">
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="gw-actions">
+              <button class="btn full-w" onclick="saveApiSettings()">💾 Save API Settings</button>
+              <button class="btn outline full-w" style="margin-top:8px" onclick="testApiConnection()">🔍 Test API Connection</button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Recent Funding Requests -->
+      <article class="panel" style="margin-top:16px">
+        <div class="panel-head">
+          <h2>Wallet Funding Requests</h2>
+          <div class="panel-head-actions">
+            <select id="gwFundingFilter" onchange="renderGatewayFundingTable()" class="interval-select">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+              <option value="failed">Failed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>User</th><th>Amount</th><th>Reference</th><th>Gateway Ref</th><th>Currency</th><th>Status</th><th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="gwFundingBody">
+              <tr><td colspan="7" class="state-msg">Loading funding requests...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="gwFundingPagination"></div>
+      </article>
+
+    </section>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="js/admin-portal.js"></script>
+  <script src="js/pwa-install.js"></script>
+
+  <!-- User Transactions Modal -->
+  <div id="userTxModal" class="afa-doc-modal-overlay" onclick="if(event.target===this)closeUserTxModal()">
+    <div class="afa-doc-modal" style="max-width:920px">
+      <div class="afa-doc-modal-head">
+        <div>
+          <div class="afa-doc-modal-title" id="userTxModalName">Transactions</div>
+          <div class="afa-doc-modal-meta" id="userTxModalMeta"></div>
+        </div>
+        <button class="afa-doc-close" onclick="closeUserTxModal()">&#10005;</button>
+      </div>
+      <div style="padding:16px 22px 22px">
+        <div class="table-wrap">
+          <table id="userTxTable">
+            <thead>
+              <tr><th>#</th><th>Type</th><th>Amount</th><th>Reference</th><th>Status</th><th>Date &amp; Time</th></tr>
+            </thead>
+            <tbody id="userTxBody">
+              <tr><td colspan="6" class="state-msg">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="afaDocModal" class="afa-doc-modal-overlay" onclick="if(event.target===this)closeAfaDocModal()">
+    <div class="afa-doc-modal">
+      <div class="afa-doc-modal-head">
+        <div>
+          <div class="afa-doc-modal-title" id="afaDocModalName">Name</div>
+          <div class="afa-doc-modal-meta" id="afaDocModalMeta"></div>
+        </div>
+        <button class="afa-doc-close" onclick="closeAfaDocModal()">&#10005;</button>
+      </div>
+      <div class="afa-doc-grid">
+        <div class="afa-doc-side">
+          <div class="afa-doc-label">ID Front</div>
+          <div id="afaDocFrontWrap" class="afa-doc-wrap"></div>
+        </div>
+        <div class="afa-doc-side">
+          <div class="afa-doc-label">ID Back</div>
+          <div id="afaDocBackWrap" class="afa-doc-wrap"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</html>

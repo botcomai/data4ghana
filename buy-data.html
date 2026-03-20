@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Services | Data4Ghana</title>
+
+<link rel="stylesheet" href="css/menu.css">
+<link rel="stylesheet" href="css/buy-data.css">
+
+    <!-- Core Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/auth-guard.js"></script>
+
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+<body>
+
+    <div id="menu-container"></div>
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+    
+    <div class="main-content">
+        <!-- HERO BANNER -->
+        <div class="afa-hero normal">
+            <div class="hero-content">
+                <div class="hero-badge">Direct Dispatch</div>
+                <h1>Individual Data Service</h1>
+                <p>Top up any number instantly with verified data bundles. Secure and lightning fast.</p>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Wallet Balance</span>
+                    <span class="stat-value" id="bannerWallet">₵98709.00</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-label">Current Rate</span>
+                    <span class="stat-value" id="bannerRate">₵0/GB (Base)</span>
+                </div>
+                <div class="stat-divider" id="freeModeDivider" style="display:none;"></div>
+                <div class="stat-item" id="freeModeHeroStat" style="display:none;">
+                    <span class="stat-label">Free Mode Owed</span>
+                    <span class="stat-value" id="bannerBalanceOwed">₵0.00</span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container container-premium">
+            <div class="form-card card glass-effect">
+                <div class="form-header">
+                    <div class="form-title-group">
+                        <span class="premium-star">📶</span>
+                        <h3>Bundle Configuration</h3>
+                    </div>
+                </div>
+
+                <!-- NETWORK SELECTION -->
+                <div class="input-group">
+                    <label>Select Network Provider</label>
+                    <div class="network-grid">
+                        <div class="network active" onclick="selectNetwork(this)">
+                            <img src="images/mtn.png" alt="MTN">
+                            <p>MTN</p>
+                        </div>
+                        <div class="network" onclick="selectNetwork(this)">
+                            <img src="images/telecel.png" alt="Telecel">
+                            <p>Telecel</p>
+                        </div>
+                        <div class="network" onclick="selectNetwork(this)">
+                            <img src="images/airteltigo.png" alt="Ishare">
+                            <p>Ishare</p>
+                        </div>
+                        <div class="network" onclick="selectNetwork(this)">
+                            <img src="images/bigtime.png" alt="Bigtime">
+                            <p>Bigtime</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHONE INPUT -->
+                <div class="input-group">
+                    <label>Recipient Phone Number</label>
+                    <input type="text" id="phone" placeholder="024XXXXXXXX" maxlength="10">
+                </div>
+
+                <!-- BUNDLE SELECTION -->
+                <div class="input-group">
+                    <label>Data Bundle Package</label>
+                    <select id="bundle">
+                        <option value="">— Select Package —</option>
+                    </select>
+                </div>
+
+                <!-- PRICE PREVIEW -->
+                <div id="pricePreview" class="price-bubble" style="display:none;">
+                    <span id="pricePreviewText">Total: ₵0.00</span>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="button-group">
+                    <button class="add-cart-btn" onclick="addToCart()">
+                        <span>Add to Queue</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                    
+                    <a href="bulk-order.html" class="bulk-link-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        Switch to Bulk
+                    </a>
+                </div>
+            </div>
+
+            <!-- CART SECTION -->
+            <div class="cart-section card" id="cartSection">
+                <div class="cart-header">
+                    <div class="cart-title">
+                        <span class="cart-icon">🛒</span>
+                        <h3>Checkout Queue</h3>
+                    </div>
+                    <span id="cartCount" class="count-badge">0 items</span>
+                </div>
+                
+                <div id="cartItems" class="cart-items-list">
+                    <div class="empty-cart">
+                        <p>Your queue is currently empty</p>
+                    </div>
+                </div>
+
+                <div id="cartTotal" class="cart-footer" style="display:none;">
+                    <!-- Populated by JS -->
+                </div>
+
+                <button class="pay-btn premium-btn" id="payBtn" onclick="makePayment()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span class="btn-text">Finalize & Pay Now</span>
+                    <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 12 14 0M12 5l7 7-7 7"/></svg>
+                </button>
+
+                <div class="secure-note">
+                    <span class="secure-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </span>
+                    Secure Encrypted Transaction
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="js/menu.js"></script>
+<script src="js/api-service.js"></script>
+<script src="js/buy-data.js"></script>
+
+    <script src="js/pwa-install.js"></script>
+</body>
+</html>
+
+
+

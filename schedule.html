@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule | Data4Ghana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/schedule.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="js/security.js"></script>
+  <!-- Supabase Database Connection -->
+  <script src="js/supabase.js"></script>
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+<body>
+
+<div id="menu-container"></div>
+<button class="menu-btn" onclick="openMenu()">☰</button>
+
+<div class="sched-page">
+
+  <!-- HERO BANNER -->
+  <div class="afa-hero normal">
+      <div class="hero-content">
+          <div class="hero-badge">Order Management</div>
+          <h1>Scheduled Deliveries</h1>
+          <p>Orders queued because a pending delivery already exists for the same number. These will process automatically once clear.</p>
+      </div>
+      <div class="hero-stats" id="schedStats">
+          <div class="stat-item">
+              <span class="stat-label">Total Scheduled</span>
+              <span class="stat-value" id="statTotal">0</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+              <span class="stat-label">Total Data</span>
+              <span class="stat-value" id="statGB">0GB</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+              <span class="stat-label">Total Cost</span>
+              <span class="stat-value" id="statCost">₵0.00</span>
+          </div>
+      </div>
+  </div>
+
+  <div class="container-premium">
+    <!-- ACTIONS & FILTERS -->
+    <div class="action-card card glass-effect">
+      <div class="form-header">
+        <div class="form-title-group">
+          <span class="premium-star">⚡</span>
+          <h3>Queue Controls</h3>
+        </div>
+        <div class="header-actions">
+          <a href="buy-data.html" class="hdr-btn secondary">+ New Order</a>
+          <button class="hdr-btn primary" onclick="processAllScheduled()" id="processAllBtn">
+            Process All Now
+          </button>
+        </div>
+      </div>
+
+      <div class="sched-filters">
+        <div class="filter-group">
+          <label>Filter by Phone</label>
+          <input type="text" id="filterPhone" placeholder="🔍 Enter number..." oninput="filterOrders()">
+        </div>
+        <div class="filter-group">
+          <label>Filter by Network</label>
+          <select id="filterNetwork" onchange="filterOrders()">
+            <option value="">All Networks</option>
+            <option>MTN</option>
+            <option>Telecel</option>
+            <option>Ishare (AirtelTigo)</option>
+            <option>Bigtime (AirtelTigo)</option>
+          </select>
+        </div>
+        <button class="filter-clear" onclick="clearFilters()">Reset</button>
+      </div>
+    </div>
+
+    <!-- ORDERS TABLE -->
+    <div class="sched-table-wrap card responsive-table-wrapper">
+      <div class="table-header-premium">
+        <div class="th-check">
+          <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
+        </div>
+        <div class="th">Recipient</div>
+        <div class="th">Service</div>
+        <div class="th">Package</div>
+        <div class="th">Cost</div>
+        <div class="th">Date Queued</div>
+        <div class="th">Status</div>
+        <div class="th" style="text-align:right;">Actions</div>
+      </div>
+
+      <div id="schedOrders">
+        <div class="sched-empty" id="loadingState">
+          <div class="spinner"></div>
+          <p>Loading scheduled orders…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BULK ACTION BAR -->
+  <div class="bulk-action-bar" id="bulkActionBar" style="display:none;">
+    <div class="selected-info">
+      <span class="count-pill" id="selectedCount">0</span>
+      <span>Orders Selected</span>
+    </div>
+    <div class="bulk-btns">
+      <button class="action-process" onclick="processSelected()">▶ Process Now</button>
+      <button class="action-delete"  onclick="deleteSelected()">🗑 Delete</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- CONFIRMATION MODAL -->
+<div class="modal-overlay" id="processModal">
+  <div class="modal-box">
+    <div class="modal-icon">⚡</div>
+    <h3 id="modalTitle">Process Scheduled Orders</h3>
+    <p id="modalBody">—</p>
+    <div class="modal-detail" id="modalDetail"></div>
+    <div class="modal-btns">
+      <button class="mbtn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="mbtn-ok" id="modalConfirmBtn" onclick="confirmProcessOrders()">✅ Process Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS TOAST (injected by JS) -->
+
+<script src="js/menu.js"></script>
+<script src="js/schedule.js"></script>
+    <script src="js/pwa-install.js"></script>
+</body>
+</html>
+
+
+

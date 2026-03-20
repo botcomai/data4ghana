@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - Data4Ghana</title>
+    
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/settings.css">
+
+    <!-- Core Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth-guard.js"></script>
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+<body>
+
+    <div id="menu-container"></div>
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+
+    <div class="container main-content">
+        <div class="header">
+            <h2>Account Settings</h2>
+            <p>Update your registration details, manage your profile picture, and secure your account.</p>
+        </div>
+
+        <div class="settings-grid">
+            <!-- AVATAR UPLOAD -->
+            <div class="card avatar-card">
+                <h3>Profile Picture</h3>
+                <div class="avatar-preview-box" id="settingsAvatarBox">
+                    <span id="settingsInitials">D4</span>
+                </div>
+                <div class="file-upload-wrapper">
+                    <input type="file" id="avatarUpload" accept="image/*">
+                    <label for="avatarUpload" class="upload-btn">Choose New Avatar</label>
+                </div>
+                <button class="save-btn" id="saveAvatarBtn" style="margin-top: 15px;" onclick="uploadAvatar()">Update Avatar</button>
+            </div>
+
+            <!-- REGISTRATION DETAILS -->
+            <div class="card details-card">
+                <h3>Registration Details</h3>
+                
+                <form id="detailsForm">
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="fName">First Name</label>
+                            <input type="text" id="fName" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="lName">Last Name</label>
+                            <input type="text" id="lName" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="businessName">Business Name (Optional)</label>
+                        <input type="text" id="businessName">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="region">Region</label>
+                        <select id="region">
+                            <option value="">Select Region</option>
+                            <option value="Greater Accra">Greater Accra</option>
+                            <option value="Ashanti">Ashanti</option>
+                            <option value="Western">Western</option>
+                            <option value="Eastern">Eastern</option>
+                            <option value="Central">Central</option>
+                            <option value="Northern">Northern</option>
+                            <option value="Volta">Volta</option>
+                            <option value="Upper East">Upper East</option>
+                            <option value="Upper West">Upper West</option>
+                            <option value="Oti">Oti</option>
+                            <option value="Bono">Bono</option>
+                            <option value="Bono East">Bono East</option>
+                            <option value="Ahafo">Ahafo</option>
+                            <option value="Savannah">Savannah</option>
+                            <option value="North East">North East</option>
+                            <option value="Western North">Western North</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="save-btn" id="saveDetailsBtn">Save Changes</button>
+                </form>
+            </div>
+
+            <div class="card mode-card">
+                <h3>Account Mode</h3>
+                <div class="mode-grid">
+                    <div class="mode-item">
+                        <span class="mode-label">Current Mode</span>
+                        <span id="settingsAccountMode" class="mode-value neutral">Standard</span>
+                    </div>
+                    <div class="mode-item">
+                        <span class="mode-label">Balance Owed</span>
+                        <span id="settingsBalanceOwed" class="mode-value">₵0.00</span>
+                    </div>
+                </div>
+                <p id="settingsModeHint" class="mode-hint">Payments are processed normally from wallet.</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <script src="js/menu.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/pwa-install.js"></script>
+</body>
+</html>
+
+
+

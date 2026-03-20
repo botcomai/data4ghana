@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Mode Settlements | Admin</title>
+
+    <link rel="stylesheet" href="css/free-mode-records.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/supabase.js"></script>
+
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+<body>
+    <div class="container">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">Admin Portal</p>
+                <h1>Free Mode Settlement Records</h1>
+                <p class="subtitle">Track debt settlements and approve payments that reduce user balance owed.</p>
+            </div>
+            <div class="header-actions">
+                <a href="admin-portal.html" class="ghost-btn">Back to Dashboard</a>
+                <button id="refreshBtn" class="primary-btn" onclick="refreshAll()">Refresh</button>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <p class="stat-label">Pending Approvals</p>
+                <h3 id="pendingCount">0</h3>
+            </article>
+            <article class="stat-card">
+                <p class="stat-label">Approved Today</p>
+                <h3 id="approvedToday">0</h3>
+            </article>
+            <article class="stat-card">
+                <p class="stat-label">Total Settled</p>
+                <h3 id="totalSettled">0.00</h3>
+            </article>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Create Settlement Record</h2>
+                <p>Add a payment record first, then approve it after confirmation.</p>
+            </div>
+
+            <form id="settlementForm" class="form-grid">
+                <div class="field wide">
+                    <label for="userSelect">User (with debt)</label>
+                    <select id="userSelect" required>
+                        <option value="">Loading users...</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="amountPaid">Amount Paid (GHS)</label>
+                    <input type="number" id="amountPaid" min="0.01" step="0.01" placeholder="0.00" required>
+                </div>
+
+                <div class="field">
+                    <label for="paymentMethod">Payment Method</label>
+                    <select id="paymentMethod">
+                        <option value="cash">Cash</option>
+                        <option value="mobile_money">Mobile Money</option>
+                        <option value="bank_transfer">Bank Transfer</option>
+                        <option value="wallet_topup">Wallet Topup</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="reference">Reference</label>
+                    <input type="text" id="reference" placeholder="Txn/Receipt ID">
+                </div>
+
+                <div class="field wide">
+                    <label for="note">Note</label>
+                    <textarea id="note" rows="3" placeholder="Optional note about this settlement"></textarea>
+                </div>
+
+                <div class="form-actions wide">
+                    <button type="submit" class="primary-btn" id="createRecordBtn">Create Pending Record</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Pending Approvals</h2>
+                <p>Approve only after payment is verified.</p>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Reference</th>
+                            <th>Created</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingBody">
+                        <tr><td colspan="6" class="state-msg">Loading pending settlements...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>History</h2>
+                <p>Recent approved and rejected records.</p>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Method</th>
+                            <th>Reference</th>
+                            <th>Reviewed</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <tr><td colspan="6" class="state-msg">Loading history...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/free-mode-records.js"></script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium AFA Setup</title>
+  
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/afa.css">
+  <!-- Use transactions.css for the history table styling -->
+  <link rel="stylesheet" href="css/transactions.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/security.js"></script>
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+
+    <body class="afa-page">
+    <div id="menu-container"></div>
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+    
+    <div class="main-content">
+        <!-- HERO BANNER -->
+        <div class="afa-hero">
+            <div class="hero-content">
+                <div class="hero-badge">Enterprise Direct</div>
+                <h1>Enterprise Service Provision</h1>
+                <p>Fast-tracked registration system with instant configuration. No document uploads required.</p>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-label">System Credit</span>
+                    <span class="stat-value" id="afaWalletDisplay">₵0.00</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Registered</span>
+                    <span class="stat-value" id="totalAfaCount">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="container container-premium">
+            <!-- REGISTRATION FORM -->
+            <div class="form-card card">
+                <div class="form-header">
+                    <div class="form-title-group">
+                        <span class="premium-star">💎</span>
+                        <h3>New Registration</h3>
+                    </div>
+                    <div class="premium-price-tag">
+                        <span class="price-label">Fee:</span>
+                        <span class="premium-price-label">₵30.00</span>
+                    </div>
+                </div>
+
+                <form id="premiumAfaForm">
+                    <div class="afa-grid">
+                        <div class="input-group">
+                            <label>Beneficiary Full Name</label>
+                            <input type="text" id="pName" placeholder="Enter legal name" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Activation Phone Number</label>
+                            <input type="text" id="pPhone" placeholder="05XXXXXXXX" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Identification Type</label>
+                            <select id="pIdType" required>
+                                <option value="">Select ID Type</option>
+                                <option>Ghana Card</option>
+                                <option>Passport</option>
+                                <option>Driver License</option>
+                                <option>Voter ID</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>ID Card Number</label>
+                            <input type="text" id="pIdNumber" placeholder="GHA-XXXXXXX-X" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="margin-bottom: 30px;">
+                        <label>Date of Birth</label>
+                        <input type="date" id="pDob" required>
+                    </div>
+                    
+                    <button type="submit" class="pay-btn premium-btn" id="submitBtn">
+                        <span class="btn-text">Complete Secure Registration</span>
+                        <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                    </button>
+                    <p class="form-footer-note">⚡ Funds will be deducted instantly from your wallet balance.</p>
+                </form>
+            </div>
+
+            <!-- HISTORY SECTION -->
+            <div class="history-section">
+                <div class="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+                    <h3>Recent Premium Activity</h3>
+                </div>
+                
+                <div class="table-box card">
+                    <div class="table-container">
+                        <table id="premiumHistoryTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Beneficiary</th>
+                                    <th>Phone</th>
+                                    <th>Identity Details</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="loading">
+                                    <td colspan="5">
+                                        <div class="loading-state">
+                                            <div class="spinner"></div>
+                                            <span>Syncing history...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <script src="js/menu.js"></script>
+  <script src="js/afa-premium.js"></script>
+
+    <script src="js/pwa-install.js"></script>
+</body>
+</html>
+

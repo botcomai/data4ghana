@@ -1,0 +1,249 @@
+:root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --primary: #2563eb;
+    --danger: #dc2626;
+    --success: #059669;
+    --warning: #d97706;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.container {
+    width: min(1200px, 92vw);
+    margin: 28px auto 50px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 22px;
+}
+
+.eyebrow {
+    margin: 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+}
+
+h1 {
+    margin: 4px 0;
+    font-size: 30px;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    margin: 0;
+    color: var(--muted);
+    max-width: 720px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.primary-btn,
+.ghost-btn,
+.approve-btn,
+.reject-btn {
+    border: 0;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 14px;
+    cursor: pointer;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: #fff;
+}
+
+.ghost-btn {
+    text-decoration: none;
+    color: var(--text);
+    background: #e2e8f0;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.stat-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.stat-label {
+    margin: 0;
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.stat-card h3 {
+    margin: 8px 0 0;
+    font-size: 24px;
+}
+
+.panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 14px;
+}
+
+.panel-header {
+    margin-bottom: 14px;
+}
+
+.panel-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.panel-header p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.field.wide,
+.form-actions.wide {
+    grid-column: 1 / -1;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #334155;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    background: #fff;
+    color: var(--text);
+}
+
+textarea {
+    resize: vertical;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 11px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+}
+
+th {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.state-msg {
+    color: var(--muted);
+    text-align: center;
+}
+
+.approve-btn {
+    background: rgba(5, 150, 105, 0.14);
+    color: #047857;
+    margin-right: 6px;
+}
+
+.reject-btn {
+    background: rgba(220, 38, 38, 0.14);
+    color: #b91c1c;
+}
+
+.status-pill {
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.status-approved {
+    background: rgba(5, 150, 105, 0.14);
+    color: #047857;
+}
+
+.status-pending {
+    background: rgba(217, 119, 6, 0.14);
+    color: #92400e;
+}
+
+.status-rejected {
+    background: rgba(220, 38, 38, 0.14);
+    color: #b91c1c;
+}
+
+@media (max-width: 900px) {
+    .page-header {
+        flex-direction: column;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Support - Data4Ghana</title>
+    
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/support.css">
+
+    <!-- Core Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/auth-guard.js"></script>
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+<body>
+    <div id="menu-container"></div>
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+
+
+    <div class="container main-content">
+        <div class="header">
+            <h2>🎧 Technical Support</h2>
+            <p>Our support team is here to assist you. Please provide as much detail as possible to help us resolve your issue quickly.</p>
+        </div>
+
+        <div class="support-grid">
+            <!-- TICKET SUBMISSION FORM -->
+            <div class="ticket-form card">
+                <h3>Submit New Issue</h3>
+                
+                <form id="supportForm">
+                    <div class="input-group">
+                        <label for="phone">Your Phone Number</label>
+                        <input type="tel" id="phone" placeholder="e.g. 0540000000" required>
+                        <div id="phoneWarning" style="display:none; margin-top:10px; padding:12px; border-radius:10px; background:#fff1f2; border:1px solid #fda4af; color:#9f1239; font-size:13px; font-weight:600;">
+                            ⚠️ No completed orders found for this phone number. You can only submit tickets for successful transactions.
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="orderSelect">Select Related Order (Optional)</label>
+                        <select id="orderSelect" class="form-select">
+                            <option value="">-- No specific order --</option>
+                        </select>
+                        <div id="orderWarning" style="display:none; margin-top:10px; padding:12px; border-radius:10px; background:#fff1f2; border:1px solid #fda4af; color:#9f1239; font-size:13px; font-weight:600;">
+                            ⚠️ This order was completed/delivered more than 24 hours ago and is no longer eligible for technical support.
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="issue">Describe Your Issue</label>
+                        <textarea id="issue" rows="5" placeholder="Please explain the problem in detail..." required></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="screenshot">Upload Screenshot (Balance or Error)</label>
+                        <div class="file-drop-area" id="dropArea">
+                            <span class="file-msg">Drag & Drop or Click to Upload</span>
+                            <input type="file" id="screenshot" accept="image/*" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">Submit Ticket</button>
+                </form>
+            </div>
+
+            <!-- TICKET HISTORY -->
+            <div class="ticket-history card">
+                <h3>Your Active Tickets</h3>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketTableBody">
+                            <tr>
+                                <td data-label="Ticket ID">#...</td>
+                                <td data-label="Date">...</td>
+                                <td data-label="Status">...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/menu.js"></script>
+    <script src="js/support.js"></script>
+    <script src="js/pwa-install.js"></script>
+</body>
+</html>
+
+
+

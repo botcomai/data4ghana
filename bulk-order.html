@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk Data Order | Data4Ghana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/bulk-order.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="js/security.js"></script>
+  <!-- Supabase Database Connection -->
+  <script src="js/supabase.js"></script>
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+<body>
+
+    <div id="menu-container"></div>
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+    
+    <div class="main-content">
+        <!-- HERO BANNER -->
+        <div class="afa-hero normal bulk-banner">
+            <div class="hero-content">
+                <div class="hero-badge">Enterprise Bulk</div>
+                <h1>Bulk Data Dispatch</h1>
+                <p>Distribute data packages across multiple recipients instantly. Secure, lightning fast, and verified.</p>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Available Balance</span>
+                    <span class="stat-value" id="bannerWallet">₵0.00</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-label">Bulk Rate</span>
+                    <span class="stat-value" id="bannerRate">₵0.00/GB</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-premium bulk-container">
+            <div class="bulk-main-grid">
+                <!-- FORM PANEL (LEFT) -->
+                <div class="form-card card glass-effect bulk-input-panel">
+                    <div class="form-header centered-header">
+                        <div class="form-title-group">
+                            <span class="premium-star">📋</span>
+                            <h3>Order Configuration</h3>
+                        </div>
+                    </div>
+
+                    <!-- NETWORK SELECTION -->
+                    <div class="input-group">
+                        <label class="premium-label">Select Network Provider</label>
+                        <div class="network-row" id="networkRow">
+                            <div class="net-card active" onclick="selectNet(this)" data-net="MTN">
+                                <img src="images/mtn.png" alt="MTN">
+                                <span>MTN</span>
+                            </div>
+                            <div class="net-card" onclick="selectNet(this)" data-net="Telecel">
+                                <img src="images/telecel.png" alt="Telecel">
+                                <span>Telecel</span>
+                            </div>
+                            <div class="net-card" onclick="selectNet(this)" data-net="Ishare">
+                                <img src="images/airteltigo.png" alt="Ishare">
+                                <span>Ishare</span>
+                            </div>
+                            <div class="net-card" onclick="selectNet(this)" data-net="Bigtime">
+                                <img src="images/bigtime.png" alt="Bigtime">
+                                <span>Bigtime</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FORMAT GUIDE TIP -->
+                    <div class="format-tip-premium">
+                        <div class="tip-icon">✨</div>
+                        <div class="tip-content">
+                            <strong>Smart Extraction:</strong> <code>phone volume</code> (e.g., 0559623850 5) 
+                            <p>One order per line. Validates Ghanaian prefixes automatically.</p>
+                        </div>
+                    </div>
+
+                    <!-- ORDER INPUT -->
+                    <div class="input-group">
+                        <div class="textarea-header-premium">
+                            <label class="premium-label">Dispatch Matrix Entry</label>
+                            <div class="textarea-actions">
+                                <button class="action-btn-p" onclick="clearOrders()">Clear List</button>
+                                <button class="action-btn-p accent" onclick="pasteFromClipboard()">Paste Buffer</button>
+                            </div>
+                        </div>
+                        <textarea
+                            id="ordersInput"
+                            rows="12"
+                            placeholder="0559623850 5&#10;0201234567 10&#10;..."
+                            oninput="parseAndPreview()"
+                            spellcheck="false"
+                            class="bulk-textarea-premium"
+                        ></textarea>
+                    </div>
+
+                    <!-- LIVE STATS BAR -->
+                    <div class="stats-bar-premium" id="statsBar" style="display:none;">
+                        <div class="sbar-item">
+                            <span class="sbar-num" id="statValid">0</span>
+                            <span class="sbar-label">Verified</span>
+                        </div>
+                        <div class="sbar-divider"></div>
+                        <div class="sbar-item">
+                            <span class="sbar-num warning" id="statSkipped">0</span>
+                            <span class="sbar-label">Flagged</span>
+                        </div>
+                        <div class="sbar-divider"></div>
+                        <div class="sbar-item">
+                            <span class="sbar-num" id="statGB">0GB</span>
+                            <span class="sbar-label">Volume</span>
+                        </div>
+                        <div class="sbar-divider"></div>
+                        <div class="sbar-item">
+                            <span class="sbar-num emerald" id="statCost">₵0.00</span>
+                            <span class="sbar-label">Checkout</span>
+                        </div>
+                    </div>
+
+                    <div class="wallet-warning-premium" id="walletWarning" style="display:none;">
+                        <span class="warning-icon">⚠️</span>
+                        <div class="warning-text">
+                            <span id="walletWarningText">Insufficient balance.</span>
+                            <a href="wallet.html" class="top-up-link-p">Top Up Wallet →</a>
+                        </div>
+                    </div>
+
+                    <button class="pay-btn premium-btn bulk-dispatch-btn" id="submitBtn" onclick="submitBulkOrder()" disabled>
+                        <span class="btn-text">Initialize Global Dispatch</span>
+                        <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>
+                    </button>
+                </div>
+
+                <!-- PREVIEW PANEL (RIGHT) -->
+                <div class="preview-panel-card card">
+                    <div class="preview-header-premium">
+                        <div class="ph-left">
+                            <span class="live-blink"></span>
+                            <h3>Live Validation</h3>
+                        </div>
+                        <span class="preview-count-badge" id="previewBadge">Pending verification...</span>
+                    </div>
+                    <div id="previewTable" class="preview-matrix-list">
+                        <div class="preview-empty-premium">
+                            <div class="empty-icon-p">📡</div>
+                            <p>Ready for input</p>
+                            <span>Matrix verification will appear here</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL OVERLAYS -->
+    <div class="modal-overlay" id="confirmOverlay">
+        <div class="modal-box">
+            <div class="modal-icon">📦</div>
+            <h3 id="confirmTitle">Confirm Bulk Batch</h3>
+            <p id="confirmBody">Checking order integrity and wallet permissions...</p>
+            <div class="confirm-detail" id="confirmDetail"></div>
+            <div class="modal-btns">
+                <button class="mbtn-cancel" onclick="closeConfirm()">Stall Dispatch</button>
+                <button class="mbtn-ok" id="confirmBtn" onclick="executeBulkOrder()">Finalize & Pay</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="successOverlay">
+        <div class="modal-box">
+            <div class="modal-icon" style="color:#10b981;">✓</div>
+            <h3 id="successTitle">Batch Success!</h3>
+            <p id="successBody">Your bulk data orders have been queued for processing.</p>
+            <div class="success-receipt" id="successReceipt" style="text-align:left; margin-bottom:20px;"></div>
+            <button class="mbtn-ok" style="width:100%;" onclick="closeBulkSuccess()">Return to Dashboard</button>
+        </div>
+    </div>
+
+
+<script src="js/menu.js"></script>
+<script src="js/bulk-order.js"></script>
+    <script src="js/pwa-install.js"></script>
+</body>
+</html>
+
+
+

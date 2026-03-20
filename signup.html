@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account - Data4Ghana</title>
+
+    <link rel="stylesheet" href="css/signup.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+    <!-- Supabase Database Connection -->
+    <script src="js/supabase.js"></script>
+    <script src="js/security.js"></script>
+
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+
+<body>
+
+    <div class="signup-container">
+
+        <a href="index.html" class="back">← Back to Home</a>
+
+        <div class="logo">
+            <h2>Data4Ghana</h2>
+            <p>Create your account</p>
+        </div>
+
+        <div class="card">
+
+            <h1>Create Account</h1>
+            <p class="subtitle">Join thousands of satisfied customers</p>
+
+            <form id="signupForm">
+
+                <div class="name-row">
+
+                    <div class="input-group">
+                        <label>First Name</label>
+                        <input type="text" id="firstName" placeholder="First name" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Last Name</label>
+                        <input type="text" id="lastName" placeholder="Last name" required>
+                    </div>
+
+                </div>
+
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
+
+                <label>Phone Number</label>
+                <input type="tel" id="phone" placeholder="0XX XXX XXXX" required>
+
+                <label>Business Name (Optional)</label>
+                <input type="text" id="businessName" placeholder="Enter your business name">
+
+                <label>Region</label>
+                <select id="region" required
+                    style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; background: white; margin-bottom: 20px;">
+                    <option value="">Select Region</option>
+                    <option value="Greater Accra">Greater Accra</option>
+                    <option value="Ashanti">Ashanti</option>
+                    <option value="Western">Western</option>
+                    <option value="Eastern">Eastern</option>
+                    <option value="Central">Central</option>
+                    <option value="Northern">Northern</option>
+                    <option value="Volta">Volta</option>
+                    <option value="Upper East">Upper East</option>
+                    <option value="Upper West">Upper West</option>
+                    <option value="Oti">Oti</option>
+                    <option value="Bono">Bono</option>
+                    <option value="Bono East">Bono East</option>
+                    <option value="Ahafo">Ahafo</option>
+                    <option value="Savannah">Savannah</option>
+                    <option value="North East">North East</option>
+                    <option value="Western North">Western North</option>
+                </select>
+
+                <label>Password</label>
+
+                <div class="password-box">
+                    <input type="password" id="password" placeholder="Create password" required>
+                    <span onclick="togglePassword()">👁</span>
+                </div>
+
+                <ul class="rules">
+                    <li>At least 8 characters</li>
+                    <li>At least one uppercase letter</li>
+                    <li>At least one lowercase letter</li>
+                    <li>At least one number</li>
+                    <li>At least one special character (!@#$%^&*)</li>
+                </ul>
+
+                <label>Confirm Password</label>
+
+                <div class="password-box">
+                    <input type="password" id="confirmPassword" placeholder="Confirm password" required>
+                    <span onclick="toggleConfirm()">👁</span>
+                </div>
+
+                <div class="terms">
+                    <input type="checkbox" required>
+                    <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+                </div>
+
+                <button type="submit">Create Account</button>
+
+                <p class="login-link">
+                    Already have an account? <a href="login.html">Sign In</a>
+                </p>
+
+            </form>
+
+        </div>
+    </div>
+
+    <script src="js/signup.js"></script>
+
+    <script src="js/pwa-install.js"></script>
+</body>
+
+</html>

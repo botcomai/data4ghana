@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Dashboard | Data4Ghana</title>
+    
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/menu.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/security.js"></script>
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+<body>
+
+    <div id="menu-container"></div>
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+
+    <div class="main-wrapper">
+        <!-- Notification Slider -->
+        <div id="notificationSlider" class="notification-slider" style="display:none;">
+            <div id="notificationTrack" class="notification-track">
+                <!-- Slides injected here -->
+            </div>
+            <div class="slider-dots" id="sliderDots"></div>
+        </div>
+
+        <!-- Hero Command Center -->
+        <div class="premium-hero">
+            <div class="hero-content">
+                <div class="user-welcome">
+                    <h1 id="welcomeMessage">Hello, User!</h1>
+                    <p class="subtitle">Your digital gateway to seamless connectivity.</p>
+                    <div id="accountModeBadge" class="account-mode-badge" style="display:none;">Free Mode Active</div>
+                </div>
+                
+                <div class="balance-card-glass">
+                    <div class="label">Total Wallet Balance</div>
+                    <div class="amount-group">
+                        <span class="currency">₵</span>
+                        <span id="walletBalance">0.00</span>
+                    </div>
+                    <div id="freeModeBalanceOwed" class="free-mode-balance-owed" style="display:none;">Balance Owed: ₵0.00</div>
+                    <div class="action-row">
+                        <button onclick="window.location.href='wallet.html'" class="btn-topup">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                            Add Funds
+                        </button>
+                        <button onclick="openMenu()" class="btn-services">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                            Menu
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Identity Banner -->
+            <div class="identity-badge">
+                <div class="role-pill" id="bannerRole">LOADING...</div>
+                <div class="merchant-code">Code: <span id="dashboardMerchantId">D4G-...</span></div>
+            </div>
+        </div>
+
+        <div class="bottom-grid">
+            <!-- Stats Dashboard -->
+            <div class="stats-section">
+                <div class="section-header insights-header">
+                    <h3>Insights Today</h3>
+                </div>
+                <div class="stat-pill-grid">
+                    <div class="stat-pill">
+                        <div class="icon" style="color:#2563eb; background:rgba(37,99,235,0.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+                        <div class="info">
+                            <p>Orders</p>
+                            <h4 id="ordersToday">0</h4>
+                        </div>
+                    </div>
+                    <div class="stat-pill">
+                        <div class="icon" style="color:#059669; background:rgba(5,150,105,0.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+                        <div class="info">
+                            <p>GB SIZE</p>
+                            <h4 id="amountToday">₵0.00</h4>
+                        </div>
+                    </div>
+                    <div class="stat-pill">
+                        <div class="icon" style="color:#d97706; background:rgba(217,119,6,0.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                        <div class="info">
+                            <p>Data Sold</p>
+                            <h4 id="bundleToday">0GB</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="activity-section">
+                <div class="section-header">
+                    <h3>Recent History</h3>
+                    <a href="transactions.html">Show All</a>
+                </div>
+                <div id="recentTransactionsList" class="tx-list">
+                    <div class="tx-skeleton"></div>
+                    <div class="tx-skeleton"></div>
+                    <div class="tx-skeleton"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth-guard.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/pwa-install.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,222 @@
+body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f7f6;
+    color: #333;
+}
+
+.container {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+h2, h3 {
+    text-align: center;
+    color: #1e3c72;
+    font-weight: 700;
+}
+
+h2 {
+    margin-top: 0;
+    font-size: 24px;
+    letter-spacing: -0.5px;
+    margin-bottom: 20px;
+}
+
+.balance-card {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 30px 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(30, 60, 114, 0.2);
+}
+
+.balance-card p {
+    margin: 0 0 5px 0;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+.balance-card h1 {
+    margin: 0;
+    font-size: 42px;
+    font-weight: 700;
+}
+
+.section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+.section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.method {
+    border: 1px solid #dbe4ee;
+    padding: 18px 16px;
+    border-radius: 14px;
+    margin-top: 12px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+.method h4 {
+    margin: 0 0 6px 0;
+    font-size: 16px;
+    color: #0f172a;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+
+.method p {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.45;
+    max-width: 420px;
+    margin-inline: auto;
+}
+
+.method:hover {
+    border-color: #2a7de1;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(42, 125, 225, 0.14);
+}
+
+.selected-manual {
+    border: 2px solid #f39c12 !important;
+    background: linear-gradient(180deg, #fffdf5 0%, #fff7e5 100%);
+    box-shadow: 0 10px 24px rgba(243, 156, 18, 0.16);
+}
+
+.selected-paystack {
+    border: 2px solid #2a7de1 !important;
+    background: linear-gradient(180deg, #f5f9ff 0%, #ebf3ff 100%);
+    box-shadow: 0 10px 24px rgba(42, 125, 225, 0.16);
+}
+
+.method.disabled-method {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.copy-btn {
+    margin-left: 10px;
+    padding: 6px 12px;
+    background: #f1f5f9;
+    border: none;
+    color: #475569;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+    background: #2a7de1;
+    color: white;
+}
+
+.fund-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #2a7de1 0%, #3498db 100%);
+    border: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(42, 125, 225, 0.3);
+}
+
+.fund-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(42, 125, 225, 0.4);
+}
+
+.fund-btn:active {
+    transform: translateY(0);
+}
+
+.payment-pending-note {
+    margin-top: 10px;
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #92400e;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 14px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    background: #f8f9fc;
+    color: #2b3035;
+}
+
+input[type="number"]:focus {
+    outline: none;
+    border-color: #2a7de1;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(42, 125, 225, 0.1);
+}
+
+label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    display: block;
+    text-align: center;
+}
+
+#amount {
+    text-align: center;
+}
+
+/* Mobile Interface Density Reduction */
+@media (max-width: 768px) {
+    .container { margin: 10px auto; padding: 15px; }
+    h2 { font-size: 22px; margin-bottom: 15px; }
+    .balance-card { padding: 30px 15px; margin-bottom: 20px; border-radius: 16px; }
+    .balance-card h1 { font-size: 38px; }
+    .balance-card p { font-size: 11px; margin-bottom: 8px; }
+    .section { padding: 20px 15px; margin-bottom: 15px; border-radius: 16px; }
+    .section h3 { font-size: 16px; margin-bottom: 12px; }
+    .method { padding: 14px; margin-top: 10px; }
+    .method h4 { font-size: 14px; }
+    .method p { font-size: 12px; line-height: 1.4; }
+    input[type="number"] { padding: 12px; font-size: 14px; margin-bottom: 15px; border-radius: 10px; }
+    .fund-btn { padding: 16px; font-size: 15px; border-radius: 12px; }
+    #feeBreakdown, #manualDetails { padding: 15px !important; border-radius: 12px !important; }
+    #refBox { flex-direction: column; text-align: center; gap: 15px; padding: 20px 15px !important; }
+    #refBox .copy-btn { width: 100%; margin: 0; }
+}

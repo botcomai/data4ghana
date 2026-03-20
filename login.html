@@ -1,0 +1,81 @@
+oy<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login - Data4Ghana</title>
+
+<link rel="stylesheet" href="css/login.css">
+
+<!-- Supabase Library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="js/security.js"></script>
+
+<!-- Supabase Connection -->
+<!-- Supabase Database Connection --><script src="js/supabase.js"></script>
+
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+
+<body>
+
+<div class="login-container">
+
+<a class="back" href="index.html">← Back to Home</a>
+
+<div class="logo">
+<h2>Data4Ghana</h2>
+<p>Sign in to continue</p>
+</div>
+
+<div class="card">
+
+<h1>Welcome Back</h1>
+<p class="subtitle">Sign in to your Data4Ghana account</p>
+
+<form id="loginForm">
+
+<label>Email Address</label>
+<input type="email" id="email" placeholder="Enter your email" required>
+
+<label>Password</label>
+
+<div class="password-box">
+<input type="password" id="password" placeholder="Enter your password" required>
+<span onclick="togglePassword()">👁</span>
+</div>
+
+<div class="options">
+<label><input type="checkbox"> Remember me</label>
+<a href="forgot-password.html">Forgot password?</a>
+</div>
+
+<button type="submit">Sign In</button>
+
+<p class="signup">
+Don't have an account?
+<a href="signup.html">Create account</a>
+</p>
+
+</form>
+
+</div>
+
+</div>
+
+<script src="js/login.js"></script>
+
+    <script src="js/pwa-install.js"></script>
+</body>
+</html>
+
+
+

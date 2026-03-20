@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <title>Data4Ghana | Elevate Your Connectivity</title>
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="images/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="images/icons/icon-512x512.png">
+    
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/supabase.js"></script>
+</head>
+<body class="landing-page">
+
+    <!-- Premium Navbar -->
+    <nav class="glass-nav">
+        <div class="nav-content">
+            <div class="logo">
+                <span class="logo-text">Data4Ghana</span>
+            </div>
+            <div class="nav-actions">
+                <a href="login.html" class="nav-link">Sign In</a>
+                <a href="signup.html" class="nav-btn">Create Account</a>
+                <button id="installAppBtn" class="sec-cta" style="display:none;">Install App</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dynamic Hero Section -->
+    <header class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-container">
+            <div class="hero-text">
+                <span class="badge">PROMPT • SECURE • AFFORDABLE</span>
+                <h1>Connectivity Without <span class="gradient-text">Limits</span></h1>
+                <p>Experience the future of telecom services in Ghana. Instant data delivery, automated top-ups, and professional management tools at your fingertips.</p>
+                <div class="hero-cta">
+                    <button onclick="window.location.href='signup.html'" class="main-cta">Explore Services</button>
+                    <button onclick="window.location.href='login.html'" class="sec-cta">Client Login</button>
+                </div>
+                <p id="installHint" style="display:none; margin-top:12px; font-size:0.95rem; opacity:0.9;"></p>
+                <div class="trust-bar">
+                    <div class="trust-item"><span class="icon">⚡</span> Instant Delivery</div>
+                    <div class="trust-item"><span class="icon">🛡️</span> Secure Payments</div>
+                    <div class="trust-item"><span class="icon">📈</span> Role-Based Pricing</div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="abstract-shape"></div>
+                <div class="floating-interface">
+                    <!-- Dashboard Mockup Element -->
+                    <div class="mockup-card">
+                        <div class="m-header">Balance</div>
+                        <div class="m-price">₵450.00</div>
+                        <div class="m-footer">Last Order: 10GB MTN</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Services Grid -->
+    <section class="services-showcase">
+        <div class="section-title">
+            <span>OUR SOLUTIONS</span>
+            <h2>Professional Digital Services</h2>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="s-icon">📡</div>
+                <h3>Data Bundles</h3>
+                <p>MTN, Telecel, and AT data at wholesale rates for every user tier.</p>
+            </div>
+            <div class="service-card">
+                <div class="s-icon">💳</div>
+                <h3>Wallet System</h3>
+                <p>Secure wallet funding with manual transfer support.</p>
+            </div>
+            <div class="service-card" onclick="window.location.href='afa.html'" style="cursor:pointer;">
+                <div class="s-icon">🏢</div>
+                <h3>Specialized Services</h3>
+                <p>Enterprise-grade tools for agents and specialized registration workflows.</p>
+            </div>
+            <div class="service-card">
+                <div class="s-icon">🤖</div>
+                <h3>Bulk Processing</h3>
+                <p>Powerful bulk ordering system for agents managing multiple accounts.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Networks -->
+    <section class="networks-section">
+        <p>POWERING CONVERSATIONS ACROSS ALL NETWORKS</p>
+        <div class="network-logos">
+            <div class="n-item">MTN</div>
+            <div class="n-item">Telecel</div>
+            <div class="n-item">AirtelTigo</div>
+        </div>
+    </section>
+
+    <footer class="landing-footer">
+        <p>© 2026 Data4Ghana Technology. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Check if user is already logged in, redirect to dashboard
+        async function checkSession() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) window.location.href = 'dashboard.html';
+        }
+        checkSession();
+    </script>
+    <script src="js/pwa-install.js"></script>
+</body>
+</html>
+
+
+

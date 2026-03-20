@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AFA PORTAL</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/afa.css">
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <!-- Supabase Database Connection -->
+  <script src="js/supabase.js"></script>
+  <script src="js/security.js"></script>
+
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+
+<body class="afa-page afa-route-page">
+
+  <button class="menu-btn" onclick="openMenu()">☰</button>
+
+  <div id="menu-container"></div>
+
+  <div class="afa-choice-container">
+
+    <div class="route-hero">
+      <div class="route-hero-left">
+        <span class="route-kicker">AFA Command Center</span>
+        <h2>AFA Services Portal</h2>
+        <p class="subtitle">Choose the execution lane that matches your client profile and delivery timeline.</p>
+      </div>
+      <div class="route-hero-right">
+        <div class="wallet-badge-quantum">Wallet Balance <strong id="afaWalletDisplay">₵0.00</strong></div>
+        <div class="route-meta-grid">
+          <div class="route-chip"><span>Normal ETA</span><strong>24-48h</strong></div>
+          <div class="route-chip"><span>Premium ETA</span><strong>Fast Track</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="afa-options">
+
+      <button class="afa-card premium" onclick="window.location.href='afa-premium.html'">
+        <div class="tier-badge">Enterprise Path</div>
+        <div class="afa-card-icon">💎</div>
+        <h4>Premium AFA</h4>
+        <span class="afa-price premium-price-label"></span>
+        <p>Instant account setup with priority processing and zero document upload friction.</p>
+        <ul class="route-benefits">
+          <li>Fastest activation lane</li>
+          <li>High-volume operations ready</li>
+          <li>Ideal for agents and scale teams</li>
+        </ul>
+        <span class="route-cta">Launch Premium Setup</span>
+      </button>
+
+      <button class="afa-card normal" onclick="window.location.href='afa-normal.html'">
+        <div class="tier-badge">Standard Path</div>
+        <div class="afa-card-icon">📡</div>
+        <h4>Normal AFA</h4>
+        <span class="afa-price normal-price-label"></span>
+        <p>Structured onboarding with ID verification for controlled, compliant activations.</p>
+        <ul class="route-benefits">
+          <li>Lower entry cost</li>
+          <li>Document-backed verification</li>
+          <li>Strong for single activations</li>
+        </ul>
+        <span class="route-cta">Launch Standard Setup</span>
+      </button>
+
+    </div>
+
+  </div>
+
+  <script src="js/menu.js"></script>
+
+  <script>
+    // Lightweight script to just fetch pricing & wallet for this routing page
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { window.location.href = 'login.html'; return; }
+
+        const { data: wData } = await supabase.from('users').select('wallet_balance, role').eq('id', user.id).single();
+        if (wData) {
+          document.getElementById('afaWalletDisplay').textContent = `₵${parseFloat(wData.wallet_balance || 0).toFixed(2)}`;
+
+          // If role is admin, use super_agent as fallback for pricing
+          const effectiveRole = wData.role === 'admin' ? 'super_agent' : (wData.role || 'client');
+
+          const { data: prices } = await supabase.from('pricing').select('product, price').eq('role', effectiveRole).in('product', ['afa_premium', 'afa_normal']);
+
+          if (prices && prices.length > 0) {
+            prices.forEach(p => {
+              if (p.product === 'afa_premium') {
+                const el = document.querySelector('.premium-price-label');
+                if (el) el.textContent = `₵${parseFloat(p.price).toFixed(2)}`;
+              }
+              if (p.product === 'afa_normal') {
+                const el = document.querySelector('.normal-price-label');
+                if (el) el.textContent = `₵${parseFloat(p.price).toFixed(2)}`;
+              }
+            });
+          }
+        }
+      } catch (e) {
+        console.error('AFA index error:', e);
+      }
+    });
+  </script>
+
+    <script src="js/pwa-install.js"></script>
+</body>
+
+</html>

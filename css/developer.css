@@ -1,0 +1,208 @@
+body {
+    background-color: #f8f9fa;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+.main-content {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.header h2 {
+    color: #1e3c72;
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0 0 5px;
+    letter-spacing: -0.5px;
+}
+
+.header p {
+    color: #5c6b7d;
+    margin: 0 auto;
+    font-size: 15px;
+    max-width: 800px;
+}
+
+.dev-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 991px) {
+    .main-content { margin: 20px auto; padding: 15px; }
+    .header h2 { font-size: 24px; }
+    .header p { font-size: 14px; }
+    .dev-grid { grid-template-columns: 1fr; gap: 20px; }
+    .card { padding: 25px 20px; border-radius: 16px; }
+    .key-box label { font-size: 11px; }
+    .endpoint { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .endpoint .method { margin-right: 0; }
+    .endpoint code { font-size: 12px; word-break: break-all; }
+    pre code { padding: 15px !important; font-size: 12px !important; }
+    .copy-field input { font-size: 13px; padding: 10px; }
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    border: 1px solid #edf0f2;
+}
+
+.card h3 {
+    margin: 0 0 25px;
+    font-size: 20px;
+    font-weight: 800;
+    text-align: center;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding-bottom: 15px;
+    position: relative;
+    border-bottom: none;
+}
+
+.card h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 4px;
+    background: linear-gradient(135deg, #2a7de1 0%, #3498db 100%);
+    border-radius: 2px;
+}
+
+/* Credential Formats */
+.key-box {
+    margin-bottom: 25px;
+}
+
+.key-box label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #8592a3;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.copy-field {
+    display: flex;
+    background: #f8f9fa;
+    border: 1px solid #dce1e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.copy-field input {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    padding: 12px 15px;
+    font-family: monospace;
+    font-size: 14px;
+    color: #2b3035;
+    outline: none;
+}
+
+.copy-field button {
+    background: white;
+    border: none;
+    border-left: 1px solid #dce1e6;
+    padding: 0 15px;
+    font-weight: 600;
+    color: #2a7de1;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.copy-field button:hover {
+    background: #f1f4f8;
+}
+
+.hint {
+    margin: 5px 0 0;
+    font-size: 12px;
+    color: #728197;
+}
+
+.roll-btn {
+    width: 100%;
+    background: transparent;
+    border: 2px solid #e74c3c;
+    color: #e74c3c;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.roll-btn:hover {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Documentation Blocks */
+.docs-card p {
+    color: #5c6b7d;
+    line-height: 1.6;
+    margin: 0 0 25px;
+}
+
+.docs-card h4 {
+    margin: 25px 0 10px;
+    font-size: 15px;
+    color: #2b3035;
+}
+
+.endpoint {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #dce1e6;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.endpoint .method {
+    background: #27ae60;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 800;
+    margin-right: 15px;
+}
+
+.endpoint code {
+    font-family: monospace;
+    color: #e74c3c;
+    font-size: 14px;
+}
+
+pre {
+    margin: 0 0 20px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+pre code {
+    font-size: 13px !important;
+    font-family: monospace !important;
+    padding: 20px !important;
+}

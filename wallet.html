@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Fund Wallet</title>
+
+<link rel="stylesheet" href="css/wallet.css">
+<link rel="stylesheet" href="css/menu.css">
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+
+<!-- Supabase Database Connection -->
+<script src="js/supabase.js"></script>
+<script src="js/security.js"></script>
+<!-- Core Scripts -->
+<script src="js/auth-guard.js"></script>
+
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+
+<body>
+
+<div id="menu-container"></div>
+
+<button class="menu-btn" onclick="openMenu()">☰</button>
+
+<div class="container">
+
+<h2>Fund Wallet</h2>
+
+<div class="balance-card">
+<p>Current Balance</p>
+<h1 id="walletBalance">₵0</h1>
+</div>
+
+<div class="section">
+
+<h3>Payment Method</h3>
+
+<div class="method selected-paystack" id="optPaystack" onclick="selectPaymentMethod('paystack')">
+  <h4>Paystack (Instant)</h4>
+  <p>Pay online and receive wallet credit automatically after webhook confirmation.</p>
+</div>
+
+<div class="method" id="optManual" onclick="selectPaymentMethod('manual')">
+  <h4>Manual Transfer (Agent)</h4>
+  <p>Transfer to our official Agent Momo account directly. Minimum manual transfer is ₵100.</p>
+</div>
+
+</div>
+
+<div class="section">
+<div id="manualAmountSection" style="display:none;">
+<label>Enter Amount (₵)</label>
+<input type="number" id="amount" placeholder="Enter amount" oninput="calculateFundingFee()">
+<p style="margin:8px 0 14px; font-size:12px; color:#b45309; font-weight:600;">Note: A 2.5% processing fee will be deducted from your final wallet balance.</p>
+</div>
+
+<!-- INLINE MANUAL TRANSFER DETAILS -->
+<div id="manualDetails" style="display:none; margin-bottom:20px; padding:20px; border-radius:10px; background:#fffdf5; border:1px solid #f39c12; font-size:15px; box-shadow:0 4px 10px rgba(243,156,18,0.05);">
+  <h4 style="margin-top:0; margin-bottom:12px; color:#1e3c72; font-size:18px; text-align:center;">Agent Transfer Details</h4>
+  <p style="margin:0 0 15px; color:#5c6b7d; font-size:14px; text-align:center;">Please send the exact amount via Mobile Money to the certified agent below:</p>
+  
+  <div style="background:#fff; padding:15px; border-radius:8px; border:1px solid #fdebd0; margin-bottom:10px;">
+    
+    <div style="font-size:14px; color:#2c3e50; margin-bottom:12px; padding-bottom:12px; border-bottom:1px dashed #fbd8aa;">
+      <span style="color:#8592a3; display:block; margin-bottom:4px; font-size:13px;">Network provider:</span>
+      <strong style="font-weight:600;">MTN MOMO PAY</strong>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:12px; border-bottom:1px dashed #fbd8aa;">
+      <div>
+          <span style="font-size:13px; color:#8592a3; display:block; margin-bottom:4px;">Account number:</span>
+          <strong style="font-size:18px; color:#2c3e50; letter-spacing:1px;" id="momoNumberInline">0559623850</strong>
+      </div>
+      <button class="copy-btn" onclick="copyText('momoNumberInline')">Copy Number</button>
+    </div>
+    
+    <div style="font-size:14px; color:#2c3e50;">
+      <span style="color:#8592a3; display:block; margin-bottom:4px; font-size:13px;">Account name:</span>
+      <strong style="font-weight:600;" id="momoNameInline">Data4Ghana Enterprise</strong>
+    </div>
+
+  </div>
+</div>
+
+<div id="refBox" style="display:none; margin-bottom:25px; padding:18px 20px; background:#f8f9fa; border:1px solid #dee2e6; border-radius:10px; justify-content:space-between; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+  <div>
+    <strong style="display:block; font-size:14px; color:#5c6b7d; margin-bottom:5px;">Your Transfer Reference:</strong>
+    <span id="refId" style="font-weight:700; font-size:22px; letter-spacing:2px; color:#1e3c72; font-family:monospace;"></span>
+    <p style="margin:8px 0 0 0; color:#e74c3c; font-size:12px; font-weight:600; line-height:1.4;">* Critical: You must use this exact ID as your Momo reference to get credited.</p>
+  </div>
+  <button class="copy-btn" onclick="copyText('refId')" style="background:#2a7de1; color:white; border:none; padding:8px 16px;">Copy ID</button>
+</div>
+
+<button id="fundBtn" onclick="processFunding()" class="fund-btn">
+Submit Manual Request
+</button>
+
+<div id="paymentPendingNote" class="payment-pending-note" style="display:none;">
+  Payment pending confirmation. Wallet balance updates after webhook verification.
+</div>
+</div>
+
+</div>
+
+<script src="js/menu.js"></script>
+<script src="js/wallet.js"></script>
+
+<script>
+
+async function loadWallet(){
+  const { data: { user } } = await supabase.auth.getUser();
+  if(!user){
+    window.location.href="login.html";
+    return;
+  }
+
+  let { data, error } = await supabase
+    .from("users")
+    .select("wallet_balance")
+    .eq("id", user.id)
+    .single();
+
+  if(error) {
+    console.error("Error loading wallet:", error);
+    return;
+  }
+
+  if(data){
+    document.getElementById("walletBalance").innerText = "₵ " + Number(data.wallet_balance || 0).toFixed(2);
+  }
+}
+
+function copyText(elementId) {
+  var textToCopy = document.getElementById(elementId).innerText;
+  navigator.clipboard.writeText(textToCopy).then(function() {
+    alert("Copied: " + textToCopy);
+  }, function(err) {
+    alert("Failed to copy text: ", err);
+  });
+}
+
+// Initialize
+loadWallet();
+
+</script>
+
+    <script src="js/pwa-install.js"></script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Transactions</title>
+
+<link rel="stylesheet" href="css/menu.css">
+<link rel="stylesheet" href="css/transactions.css">
+
+    <!-- Core Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth-guard.js"></script>
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Data4Ghana">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+
+<body>
+    <div id="menu-container"></div>
+<div class="container">
+
+<div class="page-header">
+    <div>
+        <h2>💳 Transaction History</h2>
+        <p>Monitor your wallet services and payment activities smoothly.</p>
+    </div>
+</div>
+
+<!-- SEARCH AREA -->
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="🔍 Search ID, Type, Ref...">
+    
+    <select id="typeFilter">
+        <option value="">🏷️ All Types</option>
+        <option value="Deposit">Deposit</option>
+        <option value="Purchase">Purchase</option>
+        <option value="Refund">Refund</option>
+    </select>
+
+    <select id="statusFilter">
+        <option value="">📊 All Statuses</option>
+        <option value="Completed">Completed</option>
+        <option value="Pending">Pending</option>
+        <option value="Failed">Failed</option>
+    </select>
+
+    <input type="date" id="dateFilter">
+</div>
+
+<!-- TABLE -->
+<div class="table-box responsive-table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>TYPE</th>
+                <th>AMOUNT</th>
+                <th>BAL BEFORE</th>
+                <th>BAL AFTER</th>
+                <th>STATUS</th>
+                <th>REFERENCE</th>
+                <th>DATE & TIME</th>
+                <th>ACTION</th>
+            </tr>
+        </thead>
+        <tbody id="transactionsTable">
+            <tr class="empty">
+                <td colspan="8">No transactions found</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- PAGINATION -->
+<div class="pagination-controls">
+    <button id="prevBtn" class="pagination-btn" onclick="previousPage()">← Previous</button>
+    <span id="pageInfo" class="page-info">Page 1</span>
+    <button id="nextBtn" class="pagination-btn" onclick="nextPage()">Next →</button>
+</div>
+
+</div>
+
+<!-- TRANSACTION DETAILS MODAL -->
+<div id="transactionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Transaction Details</h3>
+            <button class="modal-close" onclick="closeTransactionModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Details will be populated here -->
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn" onclick="closeTransactionModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/menu.js"></script>
+<script src="js/transactions.js"></script>
+
+    <script src="js/pwa-install.js"></script>
+</body>
+</html>
+
+
+

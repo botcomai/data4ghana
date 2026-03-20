@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scheduled Deliveries Matrix | Data4Ghana Admin</title>
+  <link rel="stylesheet" href="css/scheduled-deliveries-matrix.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="js/security.js"></script>
+  <script src="js/supabase.js"></script>
+
+  <meta name="theme-color" content="#0b1220">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Data4Ghana Admin">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+</head>
+<body>
+  <main class="matrix-shell">
+    <header class="matrix-hero">
+      <div>
+        <p class="kicker">Admin Logistics</p>
+        <h1>Scheduled Deliveries Matrix</h1>
+        <p class="subtitle">Inspect scheduled delivery volumes by date and network, then drill down to individual records.</p>
+      </div>
+      <div class="hero-actions">
+        <a class="btn ghost" href="admin-portal.html">Back to Admin Portal</a>
+        <button class="btn" type="button" onclick="refreshScheduledMatrix()">Refresh</button>
+      </div>
+    </header>
+
+    <section class="summary-grid" id="summaryGrid">
+      <article class="summary-card">
+        <p>Total Scheduled</p>
+        <h3 id="sumTotal">0</h3>
+      </article>
+      <article class="summary-card">
+        <p>Total Amount</p>
+        <h3 id="sumAmount">GHS 0.00</h3>
+      </article>
+      <article class="summary-card">
+        <p>Unique Phones</p>
+        <h3 id="sumPhones">0</h3>
+      </article>
+      <article class="summary-card">
+        <p>Networks</p>
+        <h3 id="sumNetworks">0</h3>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Filters</h2>
+        <button class="btn ghost sm" type="button" onclick="resetScheduledFilters()">Reset</button>
+      </div>
+      <div class="filters-grid">
+        <div>
+          <label for="matrixNetwork">Network</label>
+          <select id="matrixNetwork" onchange="applyScheduledFilters()">
+            <option value="">All Networks</option>
+          </select>
+        </div>
+        <div>
+          <label for="matrixStatus">Status</label>
+          <select id="matrixStatus" onchange="applyScheduledFilters()">
+            <option value="">All Statuses</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="processed">Processed</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="failed">Failed</option>
+          </select>
+        </div>
+        <div>
+          <label for="matrixDateFrom">Date From</label>
+          <input id="matrixDateFrom" type="date" onchange="applyScheduledFilters()">
+        </div>
+        <div>
+          <label for="matrixDateTo">Date To</label>
+          <input id="matrixDateTo" type="date" onchange="applyScheduledFilters()">
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Matrix</h2>
+        <span id="matrixLabel">Date x Network</span>
+      </div>
+      <div class="table-wrap">
+        <table id="matrixTable">
+          <thead id="matrixHead"></thead>
+          <tbody id="matrixBody">
+            <tr><td class="state-msg">Loading scheduled deliveries...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Scheduled Delivery Records</h2>
+        <span id="detailCount">0 rows</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Scheduled At</th>
+              <th>Phone</th>
+              <th>Network</th>
+              <th>Plan</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="matrixDetailsBody">
+            <tr><td colspan="6" class="state-msg">Loading records...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/scheduled-deliveries-matrix.js"></script>
+  <script src="js/pwa-install.js"></script>
+</body>
+</html>
