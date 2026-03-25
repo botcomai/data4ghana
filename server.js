@@ -503,3 +503,7 @@ app.listen(PORT, () => {
   console.log(`Open http://localhost:${PORT}/free-mode.html to use the demo UI`);
   console.log(`Webhook endpoint ready at POST http://localhost:${PORT}/api/webhook/paystack`);
 });
+
+module.exports = app;
+
+module.exports = app;
